@@ -1,0 +1,6 @@
+### Directories
+.vscode
+hdd
+
+### Cache
+**/__pycache__

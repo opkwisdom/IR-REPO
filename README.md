@@ -1,0 +1,1 @@
+Hydra-driven neural IR repo with unified preprocessing and training over MS MARCO, NQ, TriviaQA (plus BEIR for zero-shot eval)
