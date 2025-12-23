@@ -38,22 +38,24 @@ class DPRDataset(Dataset):
 class DPRDataModule(pl.LightningDataModule):
     def __init__(self, cfg: DictConfig, tokenizer: AutoTokenizer):
         super().__init__()
-        self.cfg = cfg
+        self.data_cfg = cfg.data
+        self.train_cfg = cfg.train
+        self.seed = cfg.seed
         self.tokenizer = tokenizer
 
     def setup(self, stage=None):
         if stage == "fit" or stage is None:
             full_dataset = DPRDataset(
-                triple_path=self.cfg.data.triple_path,
-                queries_path=self.cfg.data.queries_path,
-                collection_path=self.cfg.data.collection_path,
+                triple_path=self.data_cfg.triple_path,
+                queries_path=self.data_cfg.queries_path,
+                collection_path=self.data_cfg.collection_path,
             )
-            train_size = int((1 - self.cfg.data.test_size) * len(full_dataset))
+            train_size = int((1 - self.data_cfg.test_size) * len(full_dataset))
             val_size = len(full_dataset) - train_size
             self.train_dataset, self.val_dataset = random_split(
                 full_dataset,
                 [train_size, val_size],
-                generator=torch.Generator().manual_seed(self.cfg.seed)
+                generator=torch.Generator().manual_seed(self.seed)
             )
 
     def collate_fn(self, batch):
@@ -65,27 +67,29 @@ class DPRDataModule(pl.LightningDataModule):
             query_texts,
             padding=True,
             truncation=True,
-            max_length=self.cfg.data.max_query_length,
+            max_length=self.data_cfg.max_query_length,
             return_tensors="pt",
+            return_token_type_ids=False
         )
         p_inputs = self.tokenizer(
             pos_doc_texts + neg_doc_texts,
             padding=True,
             truncation=True,
-            max_length=self.cfg.data.max_passage_length,
+            max_length=self.data_cfg.max_passage_length,
             return_tensors="pt",
+            return_token_type_ids=False
         )
         return {
-            "queries": q_inputs,
+            "queries": q_inputs,    # input_ids, attention_mask
             "passages": p_inputs,
         }
 
     def train_dataloader(self):
         return DataLoader(
             self.train_dataset,
-            batch_size=self.cfg.training.per_device_batch_size,
+            batch_size=self.train_cfg.per_device_batch_size,
             shuffle=True,
-            num_workers=self.cfg.data.num_workers,
+            num_workers=self.data_cfg.num_workers,
             pin_memory=True,
             collate_fn=self.collate_fn,
         )
@@ -93,11 +97,11 @@ class DPRDataModule(pl.LightningDataModule):
     def val_dataloader(self):
         return DataLoader(
             self.val_dataset,
-            batch_size=self.cfg.training.per_device_batch_size,
+            batch_size=self.train_cfg.per_device_batch_size,
             shuffle=False,
-            num_workers=self.cfg.num_workers,
+            num_workers=self.data_cfg.num_workers,
             pin_memory=True,
-            collate_fn=self.data.collate_fn,
+            collate_fn=self.collate_fn,
         )
 
 
