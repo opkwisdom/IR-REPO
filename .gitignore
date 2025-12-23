@@ -7,3 +7,7 @@ hdd
 
 ### Data
 **/*.jsonl
+
+### Log
+**/outputs
+**/wandb

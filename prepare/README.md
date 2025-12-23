@@ -27,6 +27,6 @@ class Query:
 @dataclass
 class Document:
     id: str
-    text: str
+    contents: str
     title: str  # may be empty ("") if the source collection has no title
 ```

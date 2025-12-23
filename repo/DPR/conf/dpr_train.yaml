@@ -1,7 +1,42 @@
 defaults:
+  - _self_
   - data/train: msmarco_train        # default dataset
-  - model: dpr
+  - model: base
   - train: base
 
 seed: 42
 device: cuda
+num_device: 4
+
+ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr
+exp_model: DPR
+exp_name: msmarco_train
+
+
+# hydra 설정
+hydra:
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s - %(filename)s:%(lineno)d - %(levelname)s] - %(message)s'
+
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: simple
+        stream: ext://sys.stdout
+        level: INFO  # 콘솔: INFO 이상 출력
+
+      file:
+        class: logging.FileHandler
+        formatter: simple
+        # Hydra가 생성한 output 폴더에 'bm25.log' 같은 이름으로 자동 저장
+        filename: ${hydra.runtime.output_dir}/${hydra.job.name}.log
+        level: DEBUG # 파일: DEBUG 상세 기록
+
+    root:
+      level: DEBUG
+      handlers: [console, file]
+
+    disable_existing_loggers: false

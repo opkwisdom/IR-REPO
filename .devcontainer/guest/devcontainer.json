@@ -1,12 +1,15 @@
 {
-    "name": "IR-REPO subin",
+    "name": "IR-REPO guest",
     "image": "ir_repo",
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/ir_repo/work,type=bind",
     "workspaceFolder": "/home/ir_repo/work",
+    "mounts": [
+        "source=/media/hdd/ir_repo,target=/home/ir_repo/work/hdd,type=bind"
+    ],
     "runArgs": [
         "--gpus", "all",
         "--shm-size", "64g",
-        "--name", "ir-repo-subin"
+        "--name", "ir-repo-guest"
     ],
     "customizations": {
         "vscode": {

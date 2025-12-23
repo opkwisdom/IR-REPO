@@ -10,4 +10,4 @@ max_passage_length: 128
 test_size: 0.1
 
 ### Others
-num_workers: 0
+num_workers: 8
