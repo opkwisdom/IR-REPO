@@ -1,15 +1,14 @@
-# Preparation of IR Datasets
+# 정보 검색(IR) 데이터셋 준비
 
-This directory contains python scripts to download and preprocess various Information Retrieval (IR) datasets used in this project.
+이 디렉토리에는 본 프로젝트에서 사용되는 다양한 정보 검색(IR) 데이터셋(예: NQ, MS MARCO, TriviaQA, BEIR 등)을 다운로드하고 전처리하기 위한 파이썬 스크립트들이 포함되어 있습니다.
 
-The goal is to:
-- `download.py`: fetch standard IR benchmarks (e.g. NQ, MS MARCO, TriviaQA, BEIR, etc.)
-- `preprocess.py`: normalize them into a common schema for easy consumption during training and evaluation.
+주요 목표는 다음과 같습니다:
+- `download.py`: 표준 IR 벤치마크 데이터셋 다운로드 (e.g. NQ, MS MARCO, TriviaQA, BEIR, etc.)
+- `preprocess.py`: 훈련 및 평가 시 쉽게 사용할 수 있도록 해당 데이터셋들을 공통 스키마로 규격화
 
 ## Data schema
 
-All IR datasets in this project (MS MARCO, NQ, TriviaQA, etc.) are normalized into the
-following simple schema:
+본 프로젝트의 모든 IR 데이터셋(MS MARCO, NQ, TriviaQA 등)은 다음의 간단한 스키마로 정규화됩니다:
 
 ```python
 from dataclasses import dataclass

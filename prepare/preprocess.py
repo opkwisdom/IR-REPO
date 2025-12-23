@@ -23,7 +23,7 @@ class Query:
 @dataclass
 class Document:
     id: str
-    text: str
+    contents: str
     title: str
 ### ========================================================================================== ###
 
@@ -52,7 +52,7 @@ def preprocess_collections() -> None:
                     doc_id, text, title = parts
                 else:
                     raise ValueError(f"Unexpected number of columns in line: {line}")
-                document = Document(id=doc_id, text=text, title=title)
+                document = Document(id=doc_id, contents=text, title=title)
                 f_out.write(json.dumps(asdict(document), ensure_ascii=False) + "\n")
     
     print("Document collections preprocessing completed.")
@@ -100,7 +100,8 @@ def preprocess_msmarco() -> None:
 def preprocess_ir_datasets() -> None:
     """Preprocess IR Datasets."""
     print("🛠️ Preprocessing IR Datasets...")
-    dataset_list = ["nq", "triviaqa"]
+    # dataset_list = ["nq", "triviaqa", "msmarco"]
+    dataset_list = ["msmarco"]
     split_list = ["train", "dev"]
     
     for dataset in dataset_list:

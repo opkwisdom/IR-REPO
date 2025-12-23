@@ -38,6 +38,10 @@ IR_MAP = {
     "triviaqa": {
         "train": "dpr-w100/trivia-qa/train",
         "dev": "dpr-w100/trivia-qa/dev"
+    },
+    "msmarco": {
+        "train": "msmarco-passage/train/judged",
+        "dev": "msmarco-passage/dev/small"
     }
 }
 

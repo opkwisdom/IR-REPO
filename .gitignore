@@ -4,3 +4,6 @@ hdd
 
 ### Cache
 **/__pycache__
+
+### Data
+**/*.jsonl

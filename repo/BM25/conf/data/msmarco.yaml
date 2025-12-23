@@ -1,0 +1,4 @@
+name: msmarco
+queries_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_queries.jsonl
+qrels_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_qrels.jsonl
+collection_path: /home/ir_repo/work/hdd/data/preprocessed/msmarco_collection/collection.jsonl

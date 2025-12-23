@@ -23,41 +23,41 @@ def download_wiki_dump() -> None:
     print(f"Wikipedia dump downloaded to {dest_dir}")
 
 
-def download_msmarco() -> None:
-    """Download MSMARCO benchmark datasets."""
-    print("\n📦 Downloading MSMARCO datasets...")
+# def download_msmarco() -> None:
+#     """Download MSMARCO benchmark datasets."""
+#     print("\n📦 Downloading MSMARCO datasets...")
 
-    for ds_key in MSMARCO_MAP.keys():
-        dest_dir = os.path.join(BASE_DATA_DIR, ds_key)
-        os.makedirs(dest_dir, exist_ok=True)
+#     for ds_key in MSMARCO_MAP.keys():
+#         dest_dir = os.path.join(BASE_DATA_DIR, ds_key)
+#         os.makedirs(dest_dir, exist_ok=True)
 
-        dataset = MSMARCO_MAP[ds_key]
-        for name, url in dataset.items():
-            output_path = os.path.join(dest_dir, name)
+#         dataset = MSMARCO_MAP[ds_key]
+#         for name, url in dataset.items():
+#             output_path = os.path.join(dest_dir, name)
 
-            # 이미 존재하는 경우 스킵
-            if os.path.exists(output_path) or (
-                os.path.exists(output_path.rstrip(".tar.gz"))
-            ):
-                print(f"{name} already exists, skipping.")
-                continue
+#             # 이미 존재하는 경우 스킵
+#             if os.path.exists(output_path) or (
+#                 os.path.exists(output_path.rstrip(".tar.gz"))
+#             ):
+#                 print(f"{name} already exists, skipping.")
+#                 continue
 
-            subprocess.run(["wget", "-O", output_path, url], check=True)
-            print(f"{ds_key} {name} saved to {output_path}")
+#             subprocess.run(["wget", "-O", output_path, url], check=True)
+#             print(f"{ds_key} {name} saved to {output_path}")
             
-            # 압축 파일이면 자동 해제
-            if output_path.endswith(".tar.gz"):
-                extract_dir = os.path.dirname(output_path)
-                print(f"📦 Extracting tar.gz to {extract_dir} ...")
-                try:
-                    with tarfile.open(output_path, "r:gz") as tar:
-                        tar.extractall(path=extract_dir)
-                    print(f"Extracted to {extract_dir}")
-                except Exception as e:
-                    print(f"Extraction failed: {e}")
-                else:
-                    os.remove(output_path)
-                    print(f"Removed archive: {output_path}")
+#             # 압축 파일이면 자동 해제
+#             if output_path.endswith(".tar.gz"):
+#                 extract_dir = os.path.dirname(output_path)
+#                 print(f"📦 Extracting tar.gz to {extract_dir} ...")
+#                 try:
+#                     with tarfile.open(output_path, "r:gz") as tar:
+#                         tar.extractall(path=extract_dir)
+#                     print(f"Extracted to {extract_dir}")
+#                 except Exception as e:
+#                     print(f"Extraction failed: {e}")
+#                 else:
+#                     os.remove(output_path)
+#                     print(f"Removed archive: {output_path}")
 
 
 def download_hf_datasets() -> None:
@@ -129,6 +129,9 @@ def download_ir_datasets(overwrite: bool = False) -> None:
                 dataset = ir_datasets.load(dataset_name)
                 if ir_resource == "passages":
                     dest_path = os.path.join(BASE_DATA_DIR, "collection", f"{ds_key}_{ir_resource}.jsonl")
+                    if os.path.exists(dest_path) and not overwrite:
+                        print(f"{ds_key} {ir_resource} queries already exists, skipping.")
+                        continue
                     # iterate and save passages
                     with open(dest_path, 'w', encoding="utf-8") as f:
                         for doc in tqdm(dataset.docs_iter(), desc=f"Downloading {ds_key} {ir_resource}"):
@@ -140,6 +143,9 @@ def download_ir_datasets(overwrite: bool = False) -> None:
                             f.write(json.dumps(json_line, ensure_ascii=False) + "\n")
                 else:
                     dest_path = os.path.join(base_data_dir, ds_key, f"{ir_resource}_queries.jsonl")
+                    if os.path.exists(dest_path) and not overwrite:
+                        print(f"{ds_key} {ir_resource} queries already exists, skipping.")
+                        continue
                     # iterate and save queries
                     with open(dest_path, 'w', encoding="utf-8") as f:
                         for query in tqdm(dataset.queries_iter(), desc=f"Downloading {ds_key} {ir_resource}"):
@@ -151,6 +157,9 @@ def download_ir_datasets(overwrite: bool = False) -> None:
 
                     # iterate and save qrels
                     dest_path = os.path.join(base_data_dir, ds_key, f"{ir_resource}_qrels.jsonl")
+                    if os.path.exists(dest_path) and not overwrite:
+                        print(f"{ds_key} {ir_resource} queries already exists, skipping.")
+                        continue
                     with open(dest_path, 'w', encoding="utf-8") as f:
                         for qrel in tqdm(dataset.qrels_iter(), desc=f"Downloading {ds_key} {ir_resource} qrels"):
                             json_line = {
@@ -175,9 +184,9 @@ def download_beir_datasets() -> None:
 
 if __name__ == "__main__":
     exec_type = sys.argv[1]
-    if exec_type == "msmarco":
-        download_msmarco()
-    elif exec_type == "hf":
+    # if exec_type == "msmarco":
+    #     download_msmarco()
+    if exec_type == "hf":
         download_hf_datasets()
     elif exec_type == "wiki":
         download_wiki_dump()

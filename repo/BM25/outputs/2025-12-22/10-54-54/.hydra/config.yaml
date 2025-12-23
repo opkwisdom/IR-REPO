@@ -1,0 +1,13 @@
+search:
+  topk: 1000
+  batch_size: 64
+output_dir: ./outputs
+seed: 42
+data:
+  name: msmarco
+  queries_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_queries.jsonl
+  qrels_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_qrels.jsonl
+  collection_path: /home/ir_repo/work/hdd/data/preprocessed/msmarco_collection/collection.jsonl
+index:
+  path: /home/ir_repo/work/hdd/index/bm25/msmarco
+  threads: 16

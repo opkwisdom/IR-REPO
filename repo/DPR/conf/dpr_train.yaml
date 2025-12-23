@@ -1,0 +1,7 @@
+defaults:
+  - data/train: msmarco_train        # default dataset
+  - model: dpr
+  - train: base
+
+seed: 42
+device: cuda

@@ -1,12 +1,14 @@
 defaults:
   - _self_
-  - data/mining: msmarco_mining
+  - data: msmarco
   - index: msmarco
-  - search: mining
+
+search:
+  topk: 1000
+  batch_size: 64
 
 output_dir: ./outputs
 seed: 42
-device: cpu
 
 
 # hydra 설정

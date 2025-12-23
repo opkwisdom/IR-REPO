@@ -1,0 +1,2790 @@
+[2025-12-22 11:46:35,061 - negative_mining.py:72 - INFO] - Configuration:
+output_dir: ./outputs
+seed: 42
+device: cpu
+data:
+  name: msmarco
+  queries_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_queries.jsonl
+  qrels_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_qrels.jsonl
+  collection_path: /home/ir_repo/work/hdd/data/preprocessed/msmarco_collection/collection.jsonl
+index:
+  path: /home/ir_repo/work/hdd/index/bm25/msmarco
+  threads: 16
+search:
+  name: mining_search
+  topk: 100
+  n_negative: 1
+  batch_size: 64
+  output_dir: hard_negatives
+
+[2025-12-22 11:46:35,195 - reflect.py:225 - DEBUG] - autoclass(org.apache.lucene.index.IndexReader) intf False hierarchy is [(<Class: java.lang.Object at 0x7a8aef2bf340>, 1), (<Interface: java.lang.AutoCloseable at 0x7a8aef2bf3e0>, 2), (<Interface: java.io.Closeable at 0x7a8aef2bf2f0>, 1), (<Class: org.apache.lucene.index.IndexReader at 0x7a8aef2bf390>, 0)]
+[2025-12-22 11:46:35,196 - reflect.py:150 - DEBUG] - 
+meth: finalize
+  sig: ()V
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,196 - reflect.py:150 - DEBUG] - 
+meth: wait0
+  sig: (J)V
+  Public False
+  Private True
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,196 - reflect.py:315 - DEBUG] - method equals has 2 multiple signatures in hierarchy of cls Class: org.apache.lucene.index.IndexReader
+[2025-12-22 11:46:35,196 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,196 - reflect.py:322 - DEBUG] - 	 owner Class: org.apache.lucene.index.IndexReader level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,196 - reflect.py:330 - DEBUG] - discarding equals name from Class: java.lang.Object at level 1
+[2025-12-22 11:46:35,196 - reflect.py:150 - DEBUG] - 
+meth: equals
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,196 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/lang/Object;)Z', False, False)]
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: toString
+  sig: ()Ljava/lang/String;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:315 - DEBUG] - method hashCode has 2 multiple signatures in hierarchy of cls Class: org.apache.lucene.index.IndexReader
+[2025-12-22 11:46:35,197 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig 
+[2025-12-22 11:46:35,197 - reflect.py:322 - DEBUG] - 	 owner Class: org.apache.lucene.index.IndexReader level 0 param_sig 
+[2025-12-22 11:46:35,197 - reflect.py:330 - DEBUG] - discarding hashCode name from Class: java.lang.Object at level 1
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: hashCode
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()I', False, False)]
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: getClass
+  sig: ()Ljava/lang/Class;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: clone
+  sig: ()Ljava/lang/Object;
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: notify
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: notifyAll
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:315 - DEBUG] - method wait has 3 multiple signatures in hierarchy of cls Class: org.apache.lucene.index.IndexReader
+[2025-12-22 11:46:35,197 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig J
+[2025-12-22 11:46:35,197 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig JI
+[2025-12-22 11:46:35,197 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig 
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: (J)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: (JI)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,197 - reflect.py:340 - DEBUG] - method selected 3 multiple signatures of [('(J)V', False, False), ('(JI)V', False, False), ('()V', False, False)]
+[2025-12-22 11:46:35,197 - reflect.py:315 - DEBUG] - method close has 3 multiple signatures in hierarchy of cls Class: org.apache.lucene.index.IndexReader
+[2025-12-22 11:46:35,197 - reflect.py:322 - DEBUG] - 	 owner Interface: java.lang.AutoCloseable level 2 param_sig 
+[2025-12-22 11:46:35,197 - reflect.py:322 - DEBUG] - 	 owner Interface: java.io.Closeable level 1 param_sig 
+[2025-12-22 11:46:35,197 - reflect.py:322 - DEBUG] - 	 owner Class: org.apache.lucene.index.IndexReader level 0 param_sig 
+[2025-12-22 11:46:35,197 - reflect.py:330 - DEBUG] - discarding close name from Interface: java.lang.AutoCloseable at level 2
+[2025-12-22 11:46:35,197 - reflect.py:330 - DEBUG] - discarding close name from Interface: java.io.Closeable at level 1
+[2025-12-22 11:46:35,197 - reflect.py:150 - DEBUG] - 
+meth: close
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized True
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()V', False, False)]
+[2025-12-22 11:46:35,198 - reflect.py:315 - DEBUG] - method document has 3 multiple signatures in hierarchy of cls Class: org.apache.lucene.index.IndexReader
+[2025-12-22 11:46:35,198 - reflect.py:322 - DEBUG] - 	 owner Class: org.apache.lucene.index.IndexReader level 0 param_sig ILjava/util/Set;
+[2025-12-22 11:46:35,198 - reflect.py:322 - DEBUG] - 	 owner Class: org.apache.lucene.index.IndexReader level 0 param_sig I
+[2025-12-22 11:46:35,198 - reflect.py:322 - DEBUG] - 	 owner Class: org.apache.lucene.index.IndexReader level 0 param_sig ILorg/apache/lucene/index/StoredFieldVisitor;
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: document
+  sig: (ILjava/util/Set;)Lorg/apache/lucene/document/Document;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: document
+  sig: (I)Lorg/apache/lucene/document/Document;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: document
+  sig: (ILorg/apache/lucene/index/StoredFieldVisitor;)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:340 - DEBUG] - method selected 3 multiple signatures of [('(ILjava/util/Set;)Lorg/apache/lucene/document/Document;', False, False), ('(I)Lorg/apache/lucene/document/Document;', False, False), ('(ILorg/apache/lucene/index/StoredFieldVisitor;)V', False, False)]
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: storedFields
+  sig: ()Lorg/apache/lucene/index/StoredFields;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: numDocs
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: leaves
+  sig: ()Ljava/util/List;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: registerParentReader
+  sig: (Lorg/apache/lucene/index/IndexReader;)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: notifyReaderClosedListeners
+  sig: ()V
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: getRefCount
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: incRef
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: getTermVector
+  sig: (ILjava/lang/String;)Lorg/apache/lucene/index/Terms;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: termVectors
+  sig: ()Lorg/apache/lucene/index/TermVectors;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: hasDeletions
+  sig: ()Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,198 - reflect.py:150 - DEBUG] - 
+meth: getReaderCacheHelper
+  sig: ()Lorg/apache/lucene/index/IndexReader$CacheHelper;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: docFreq
+  sig: (Lorg/apache/lucene/index/Term;)I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: totalTermFreq
+  sig: (Lorg/apache/lucene/index/Term;)J
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: getSumDocFreq
+  sig: (Ljava/lang/String;)J
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: getDocCount
+  sig: (Ljava/lang/String;)I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: getSumTotalTermFreq
+  sig: (Ljava/lang/String;)J
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: doClose
+  sig: ()V
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: getTermVectors
+  sig: (I)Lorg/apache/lucene/index/Fields;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: maxDoc
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: numDeletedDocs
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: decRef
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: reportCloseToParentReaders
+  sig: ()V
+  Public False
+  Private True
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: tryIncRef
+  sig: ()Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: getContext
+  sig: ()Lorg/apache/lucene/index/IndexReaderContext;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,199 - reflect.py:150 - DEBUG] - 
+meth: ensureOpen
+  sig: ()V
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,199 - negative_mining.py:77 - INFO] - Initialized LuceneSearcher with index at /home/ir_repo/work/hdd/index/bm25/msmarco
+[2025-12-22 11:46:35,200 - load.py:41 - INFO] - Loading queries from /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_queries.jsonl...
+[2025-12-22 11:46:35,214 - load.py:51 - INFO] - Loaded 6980 queries.
+[2025-12-22 11:46:35,214 - load.py:26 - INFO] - Loading qrels from /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_qrels.jsonl...
+[2025-12-22 11:46:35,231 - load.py:36 - INFO] - Loaded 7437 qrels.
+[2025-12-22 11:46:35,233 - negative_mining.py:40 - INFO] - Searching 6980 queries with batch size 64 and topk 100
+[2025-12-22 11:46:35,678 - reflect.py:225 - DEBUG] - autoclass(java.util.Map) intf True hierarchy is [(<Class: java.lang.Object at 0x7a8aef2129e0>, 1), (<Interface: java.util.Map at 0x7a8aef212760>, 0)]
+[2025-12-22 11:46:35,678 - reflect.py:150 - DEBUG] - 
+meth: finalize
+  sig: ()V
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,678 - reflect.py:150 - DEBUG] - 
+meth: wait0
+  sig: (J)V
+  Public False
+  Private True
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,678 - reflect.py:315 - DEBUG] - method equals has 2 multiple signatures in hierarchy of cls Interface: java.util.Map
+[2025-12-22 11:46:35,679 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,679 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,679 - reflect.py:330 - DEBUG] - discarding equals name from Class: java.lang.Object at level 1
+[2025-12-22 11:46:35,679 - reflect.py:150 - DEBUG] - 
+meth: equals
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,679 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/lang/Object;)Z', False, False)]
+[2025-12-22 11:46:35,679 - reflect.py:150 - DEBUG] - 
+meth: toString
+  sig: ()Ljava/lang/String;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,679 - reflect.py:315 - DEBUG] - method hashCode has 2 multiple signatures in hierarchy of cls Interface: java.util.Map
+[2025-12-22 11:46:35,679 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig 
+[2025-12-22 11:46:35,679 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig 
+[2025-12-22 11:46:35,679 - reflect.py:330 - DEBUG] - discarding hashCode name from Class: java.lang.Object at level 1
+[2025-12-22 11:46:35,679 - reflect.py:150 - DEBUG] - 
+meth: hashCode
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,679 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()I', False, False)]
+[2025-12-22 11:46:35,679 - reflect.py:150 - DEBUG] - 
+meth: getClass
+  sig: ()Ljava/lang/Class;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,679 - reflect.py:150 - DEBUG] - 
+meth: clone
+  sig: ()Ljava/lang/Object;
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,679 - reflect.py:150 - DEBUG] - 
+meth: notify
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,679 - reflect.py:150 - DEBUG] - 
+meth: notifyAll
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,679 - reflect.py:315 - DEBUG] - method wait has 3 multiple signatures in hierarchy of cls Interface: java.util.Map
+[2025-12-22 11:46:35,679 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig J
+[2025-12-22 11:46:35,679 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig JI
+[2025-12-22 11:46:35,679 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig 
+[2025-12-22 11:46:35,679 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: (J)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: (JI)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:340 - DEBUG] - method selected 3 multiple signatures of [('(J)V', False, False), ('(JI)V', False, False), ('()V', False, False)]
+[2025-12-22 11:46:35,680 - reflect.py:315 - DEBUG] - method remove has 2 multiple signatures in hierarchy of cls Interface: java.util.Map
+[2025-12-22 11:46:35,680 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,680 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: remove
+  sig: (Ljava/lang/Object;Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: remove
+  sig: (Ljava/lang/Object;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:340 - DEBUG] - method selected 2 multiple signatures of [('(Ljava/lang/Object;Ljava/lang/Object;)Z', False, False), ('(Ljava/lang/Object;)Ljava/lang/Object;', False, False)]
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: size
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: get
+  sig: (Ljava/lang/Object;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: put
+  sig: (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: values
+  sig: ()Ljava/util/Collection;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: copyOf
+  sig: (Ljava/util/Map;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: clear
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:150 - DEBUG] - 
+meth: isEmpty
+  sig: ()Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,680 - reflect.py:315 - DEBUG] - method replace has 2 multiple signatures in hierarchy of cls Interface: java.util.Map
+[2025-12-22 11:46:35,680 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,681 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,681 - reflect.py:150 - DEBUG] - 
+meth: replace
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,681 - reflect.py:150 - DEBUG] - 
+meth: replace
+  sig: (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,681 - reflect.py:340 - DEBUG] - method selected 2 multiple signatures of [('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z', False, False), ('(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;', False, False)]
+[2025-12-22 11:46:35,681 - reflect.py:150 - DEBUG] - 
+meth: replaceAll
+  sig: (Ljava/util/function/BiFunction;)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,681 - reflect.py:315 - DEBUG] - method of has 11 multiple signatures in hierarchy of cls Interface: java.util.Map
+[2025-12-22 11:46:35,681 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,681 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig 
+[2025-12-22 11:46:35,681 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,681 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,681 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,681 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,682 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,682 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,682 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,682 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,682 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,682 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,682 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: ()Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,683 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,683 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,683 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,683 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,683 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,683 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,684 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,684 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,684 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,684 - reflect.py:340 - DEBUG] - method selected 11 multiple signatures of [('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('()Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;', True, False)]
+[2025-12-22 11:46:35,684 - reflect.py:150 - DEBUG] - 
+meth: merge
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,684 - reflect.py:150 - DEBUG] - 
+meth: entrySet
+  sig: ()Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,684 - reflect.py:150 - DEBUG] - 
+meth: putAll
+  sig: (Ljava/util/Map;)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,684 - reflect.py:150 - DEBUG] - 
+meth: putIfAbsent
+  sig: (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,684 - reflect.py:150 - DEBUG] - 
+meth: compute
+  sig: (Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: entry
+  sig: (Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: forEach
+  sig: (Ljava/util/function/BiConsumer;)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: containsKey
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: computeIfAbsent
+  sig: (Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: keySet
+  sig: ()Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: containsValue
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: getOrDefault
+  sig: (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: computeIfPresent
+  sig: (Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:150 - DEBUG] - 
+meth: ofEntries
+  sig: ([Ljava/util/Map$Entry;)Ljava/util/Map;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient True
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,685 - reflect.py:225 - DEBUG] - autoclass(java.util.Set) intf True hierarchy is [(<Class: java.lang.Object at 0x7a8aef212fd0>, 3), (<Interface: java.lang.Iterable at 0x7a8aef212f80>, 2), (<Interface: java.util.Collection at 0x7a8aef213b60>, 1), (<Interface: java.util.Set at 0x7a8aef213d40>, 0)]
+[2025-12-22 11:46:35,686 - reflect.py:150 - DEBUG] - 
+meth: finalize
+  sig: ()V
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,686 - reflect.py:150 - DEBUG] - 
+meth: wait0
+  sig: (J)V
+  Public False
+  Private True
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,686 - reflect.py:315 - DEBUG] - method equals has 3 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,686 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 3 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,686 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,686 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,686 - reflect.py:330 - DEBUG] - discarding equals name from Class: java.lang.Object at level 3
+[2025-12-22 11:46:35,686 - reflect.py:330 - DEBUG] - discarding equals name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,686 - reflect.py:150 - DEBUG] - 
+meth: equals
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,686 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/lang/Object;)Z', False, False)]
+[2025-12-22 11:46:35,686 - reflect.py:150 - DEBUG] - 
+meth: toString
+  sig: ()Ljava/lang/String;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,686 - reflect.py:315 - DEBUG] - method hashCode has 3 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 3 param_sig 
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig 
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig 
+[2025-12-22 11:46:35,687 - reflect.py:330 - DEBUG] - discarding hashCode name from Class: java.lang.Object at level 3
+[2025-12-22 11:46:35,687 - reflect.py:330 - DEBUG] - discarding hashCode name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,687 - reflect.py:150 - DEBUG] - 
+meth: hashCode
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,687 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()I', False, False)]
+[2025-12-22 11:46:35,687 - reflect.py:150 - DEBUG] - 
+meth: getClass
+  sig: ()Ljava/lang/Class;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,687 - reflect.py:150 - DEBUG] - 
+meth: clone
+  sig: ()Ljava/lang/Object;
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,687 - reflect.py:150 - DEBUG] - 
+meth: notify
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,687 - reflect.py:150 - DEBUG] - 
+meth: notifyAll
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,687 - reflect.py:315 - DEBUG] - method wait has 3 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 3 param_sig J
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 3 param_sig JI
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 3 param_sig 
+[2025-12-22 11:46:35,687 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: (J)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,687 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: (JI)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,687 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,687 - reflect.py:340 - DEBUG] - method selected 3 multiple signatures of [('(J)V', False, False), ('(JI)V', False, False), ('()V', False, False)]
+[2025-12-22 11:46:35,687 - reflect.py:315 - DEBUG] - method iterator has 3 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Interface: java.lang.Iterable level 2 param_sig 
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig 
+[2025-12-22 11:46:35,687 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig 
+[2025-12-22 11:46:35,687 - reflect.py:330 - DEBUG] - discarding iterator name from Interface: java.lang.Iterable at level 2
+[2025-12-22 11:46:35,687 - reflect.py:330 - DEBUG] - discarding iterator name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,688 - reflect.py:150 - DEBUG] - 
+meth: iterator
+  sig: ()Ljava/util/Iterator;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,688 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()Ljava/util/Iterator;', False, False)]
+[2025-12-22 11:46:35,688 - reflect.py:315 - DEBUG] - method spliterator has 3 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.lang.Iterable level 2 param_sig 
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig 
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig 
+[2025-12-22 11:46:35,688 - reflect.py:330 - DEBUG] - discarding spliterator name from Interface: java.lang.Iterable at level 2
+[2025-12-22 11:46:35,688 - reflect.py:330 - DEBUG] - discarding spliterator name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,688 - reflect.py:150 - DEBUG] - 
+meth: spliterator
+  sig: ()Ljava/util/Spliterator;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,688 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()Ljava/util/Spliterator;', False, False)]
+[2025-12-22 11:46:35,688 - reflect.py:150 - DEBUG] - 
+meth: forEach
+  sig: (Ljava/util/function/Consumer;)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,688 - reflect.py:315 - DEBUG] - method remove has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,688 - reflect.py:330 - DEBUG] - discarding remove name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,688 - reflect.py:150 - DEBUG] - 
+meth: remove
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,688 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/lang/Object;)Z', False, False)]
+[2025-12-22 11:46:35,688 - reflect.py:315 - DEBUG] - method size has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig 
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig 
+[2025-12-22 11:46:35,688 - reflect.py:330 - DEBUG] - discarding size name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,688 - reflect.py:150 - DEBUG] - 
+meth: size
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,688 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()I', False, False)]
+[2025-12-22 11:46:35,688 - reflect.py:315 - DEBUG] - method clear has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig 
+[2025-12-22 11:46:35,688 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig 
+[2025-12-22 11:46:35,688 - reflect.py:330 - DEBUG] - discarding clear name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,688 - reflect.py:150 - DEBUG] - 
+meth: clear
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,688 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()V', False, False)]
+[2025-12-22 11:46:35,688 - reflect.py:315 - DEBUG] - method isEmpty has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig 
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig 
+[2025-12-22 11:46:35,689 - reflect.py:330 - DEBUG] - discarding isEmpty name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,689 - reflect.py:150 - DEBUG] - 
+meth: isEmpty
+  sig: ()Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,689 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()Z', False, False)]
+[2025-12-22 11:46:35,689 - reflect.py:315 - DEBUG] - method add has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,689 - reflect.py:330 - DEBUG] - discarding add name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,689 - reflect.py:150 - DEBUG] - 
+meth: add
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,689 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/lang/Object;)Z', False, False)]
+[2025-12-22 11:46:35,689 - reflect.py:315 - DEBUG] - method toArray has 5 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig [Ljava/lang/Object;
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/util/function/IntFunction;
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig 
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig 
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig [Ljava/lang/Object;
+[2025-12-22 11:46:35,689 - reflect.py:330 - DEBUG] - discarding toArray name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,689 - reflect.py:150 - DEBUG] - 
+meth: toArray
+  sig: (Ljava/util/function/IntFunction;)[Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,689 - reflect.py:330 - DEBUG] - discarding toArray name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,689 - reflect.py:150 - DEBUG] - 
+meth: toArray
+  sig: ()[Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,689 - reflect.py:150 - DEBUG] - 
+meth: toArray
+  sig: ([Ljava/lang/Object;)[Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,689 - reflect.py:340 - DEBUG] - method selected 3 multiple signatures of [('(Ljava/util/function/IntFunction;)[Ljava/lang/Object;', False, False), ('()[Ljava/lang/Object;', False, False), ('([Ljava/lang/Object;)[Ljava/lang/Object;', False, False)]
+[2025-12-22 11:46:35,689 - reflect.py:150 - DEBUG] - 
+meth: stream
+  sig: ()Ljava/util/stream/Stream;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,689 - reflect.py:315 - DEBUG] - method contains has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,689 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,690 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,690 - reflect.py:330 - DEBUG] - discarding contains name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,690 - reflect.py:150 - DEBUG] - 
+meth: contains
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,690 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/lang/Object;)Z', False, False)]
+[2025-12-22 11:46:35,690 - reflect.py:315 - DEBUG] - method addAll has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,690 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/util/Collection;
+[2025-12-22 11:46:35,690 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/util/Collection;
+[2025-12-22 11:46:35,690 - reflect.py:330 - DEBUG] - discarding addAll name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,690 - reflect.py:150 - DEBUG] - 
+meth: addAll
+  sig: (Ljava/util/Collection;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,690 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/util/Collection;)Z', False, False)]
+[2025-12-22 11:46:35,690 - reflect.py:150 - DEBUG] - 
+meth: removeIf
+  sig: (Ljava/util/function/Predicate;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,690 - reflect.py:315 - DEBUG] - method removeAll has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,690 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/util/Collection;
+[2025-12-22 11:46:35,690 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/util/Collection;
+[2025-12-22 11:46:35,690 - reflect.py:330 - DEBUG] - discarding removeAll name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,690 - reflect.py:150 - DEBUG] - 
+meth: removeAll
+  sig: (Ljava/util/Collection;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,690 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/util/Collection;)Z', False, False)]
+[2025-12-22 11:46:35,690 - reflect.py:315 - DEBUG] - method retainAll has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,690 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/util/Collection;
+[2025-12-22 11:46:35,690 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/util/Collection;
+[2025-12-22 11:46:35,690 - reflect.py:330 - DEBUG] - discarding retainAll name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,690 - reflect.py:150 - DEBUG] - 
+meth: retainAll
+  sig: (Ljava/util/Collection;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,691 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/util/Collection;)Z', False, False)]
+[2025-12-22 11:46:35,691 - reflect.py:315 - DEBUG] - method containsAll has 2 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,691 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Collection level 1 param_sig Ljava/util/Collection;
+[2025-12-22 11:46:35,691 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/util/Collection;
+[2025-12-22 11:46:35,691 - reflect.py:330 - DEBUG] - discarding containsAll name from Interface: java.util.Collection at level 1
+[2025-12-22 11:46:35,691 - reflect.py:150 - DEBUG] - 
+meth: containsAll
+  sig: (Ljava/util/Collection;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract True
+  Strict False
+
+[2025-12-22 11:46:35,691 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/util/Collection;)Z', False, False)]
+[2025-12-22 11:46:35,691 - reflect.py:150 - DEBUG] - 
+meth: parallelStream
+  sig: ()Ljava/util/stream/Stream;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,691 - reflect.py:150 - DEBUG] - 
+meth: copyOf
+  sig: (Ljava/util/Collection;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,691 - reflect.py:315 - DEBUG] - method of has 12 multiple signatures in hierarchy of cls Interface: java.util.Set
+[2025-12-22 11:46:35,691 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,691 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,691 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,691 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig 
+[2025-12-22 11:46:35,691 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,691 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,692 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,692 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,692 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig [Ljava/lang/Object;
+[2025-12-22 11:46:35,692 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,692 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,692 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Set level 0 param_sig Ljava/lang/Object;Ljava/lang/Object;
+[2025-12-22 11:46:35,692 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,692 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,692 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,692 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: ()Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,692 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,692 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,693 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,693 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,693 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: ([Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient True
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,693 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,693 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,693 - reflect.py:150 - DEBUG] - 
+meth: of
+  sig: (Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,693 - reflect.py:340 - DEBUG] - method selected 12 multiple signatures of [('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False), ('()Ljava/util/Set;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False), ('([Ljava/lang/Object;)Ljava/util/Set;', True, True), ('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False), ('(Ljava/lang/Object;)Ljava/util/Set;', True, False), ('(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Set;', True, False)]
+[2025-12-22 11:46:35,693 - reflect.py:225 - DEBUG] - autoclass(java.util.concurrent.ConcurrentHashMap$MapEntry) intf False hierarchy is [(<Class: java.lang.Object at 0x7a8aef212f30>, 1), (<Interface: java.util.Map$Entry at 0x7a8aef212d50>, 1), (<Class: java.util.concurrent.ConcurrentHashMap$MapEntry at 0x7a8aef212e40>, 0)]
+[2025-12-22 11:46:35,694 - reflect.py:150 - DEBUG] - 
+meth: finalize
+  sig: ()V
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,694 - reflect.py:150 - DEBUG] - 
+meth: wait0
+  sig: (J)V
+  Public False
+  Private True
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,694 - reflect.py:315 - DEBUG] - method equals has 3 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,694 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,694 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,694 - reflect.py:322 - DEBUG] - 	 owner Class: java.util.concurrent.ConcurrentHashMap$MapEntry level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,694 - reflect.py:330 - DEBUG] - discarding equals name from Class: java.lang.Object at level 1
+[2025-12-22 11:46:35,694 - reflect.py:330 - DEBUG] - discarding equals name from Interface: java.util.Map$Entry at level 1
+[2025-12-22 11:46:35,695 - reflect.py:150 - DEBUG] - 
+meth: equals
+  sig: (Ljava/lang/Object;)Z
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,695 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/lang/Object;)Z', False, False)]
+[2025-12-22 11:46:35,695 - reflect.py:315 - DEBUG] - method toString has 2 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,695 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig 
+[2025-12-22 11:46:35,695 - reflect.py:322 - DEBUG] - 	 owner Class: java.util.concurrent.ConcurrentHashMap$MapEntry level 0 param_sig 
+[2025-12-22 11:46:35,695 - reflect.py:330 - DEBUG] - discarding toString name from Class: java.lang.Object at level 1
+[2025-12-22 11:46:35,695 - reflect.py:150 - DEBUG] - 
+meth: toString
+  sig: ()Ljava/lang/String;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,695 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()Ljava/lang/String;', False, False)]
+[2025-12-22 11:46:35,695 - reflect.py:315 - DEBUG] - method hashCode has 3 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,695 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig 
+[2025-12-22 11:46:35,695 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig 
+[2025-12-22 11:46:35,695 - reflect.py:322 - DEBUG] - 	 owner Class: java.util.concurrent.ConcurrentHashMap$MapEntry level 0 param_sig 
+[2025-12-22 11:46:35,695 - reflect.py:330 - DEBUG] - discarding hashCode name from Class: java.lang.Object at level 1
+[2025-12-22 11:46:35,695 - reflect.py:330 - DEBUG] - discarding hashCode name from Interface: java.util.Map$Entry at level 1
+[2025-12-22 11:46:35,695 - reflect.py:150 - DEBUG] - 
+meth: hashCode
+  sig: ()I
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,695 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()I', False, False)]
+[2025-12-22 11:46:35,695 - reflect.py:150 - DEBUG] - 
+meth: getClass
+  sig: ()Ljava/lang/Class;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,695 - reflect.py:150 - DEBUG] - 
+meth: clone
+  sig: ()Ljava/lang/Object;
+  Public False
+  Private False
+  Protected True
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,695 - reflect.py:150 - DEBUG] - 
+meth: notify
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,695 - reflect.py:150 - DEBUG] - 
+meth: notifyAll
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native True
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,695 - reflect.py:315 - DEBUG] - method wait has 3 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,695 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig J
+[2025-12-22 11:46:35,695 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig JI
+[2025-12-22 11:46:35,695 - reflect.py:322 - DEBUG] - 	 owner Class: java.lang.Object level 1 param_sig 
+[2025-12-22 11:46:35,695 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: (J)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,696 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: (JI)V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,696 - reflect.py:150 - DEBUG] - 
+meth: wait
+  sig: ()V
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final True
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,696 - reflect.py:340 - DEBUG] - method selected 3 multiple signatures of [('(J)V', False, False), ('(JI)V', False, False), ('()V', False, False)]
+[2025-12-22 11:46:35,696 - reflect.py:150 - DEBUG] - 
+meth: copyOf
+  sig: (Ljava/util/Map$Entry;)Ljava/util/Map$Entry;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,696 - reflect.py:315 - DEBUG] - method getValue has 2 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,696 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig 
+[2025-12-22 11:46:35,696 - reflect.py:322 - DEBUG] - 	 owner Class: java.util.concurrent.ConcurrentHashMap$MapEntry level 0 param_sig 
+[2025-12-22 11:46:35,696 - reflect.py:330 - DEBUG] - discarding getValue name from Interface: java.util.Map$Entry at level 1
+[2025-12-22 11:46:35,696 - reflect.py:150 - DEBUG] - 
+meth: getValue
+  sig: ()Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,696 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()Ljava/lang/Object;', False, False)]
+[2025-12-22 11:46:35,696 - reflect.py:315 - DEBUG] - method getKey has 2 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,696 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig 
+[2025-12-22 11:46:35,696 - reflect.py:322 - DEBUG] - 	 owner Class: java.util.concurrent.ConcurrentHashMap$MapEntry level 0 param_sig 
+[2025-12-22 11:46:35,696 - reflect.py:330 - DEBUG] - discarding getKey name from Interface: java.util.Map$Entry at level 1
+[2025-12-22 11:46:35,696 - reflect.py:150 - DEBUG] - 
+meth: getKey
+  sig: ()Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,696 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('()Ljava/lang/Object;', False, False)]
+[2025-12-22 11:46:35,696 - reflect.py:315 - DEBUG] - method comparingByKey has 2 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,696 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig Ljava/util/Comparator;
+[2025-12-22 11:46:35,696 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig 
+[2025-12-22 11:46:35,696 - reflect.py:150 - DEBUG] - 
+meth: comparingByKey
+  sig: (Ljava/util/Comparator;)Ljava/util/Comparator;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,696 - reflect.py:150 - DEBUG] - 
+meth: comparingByKey
+  sig: ()Ljava/util/Comparator;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,696 - reflect.py:340 - DEBUG] - method selected 2 multiple signatures of [('(Ljava/util/Comparator;)Ljava/util/Comparator;', True, False), ('()Ljava/util/Comparator;', True, False)]
+[2025-12-22 11:46:35,696 - reflect.py:315 - DEBUG] - method setValue has 2 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,696 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,696 - reflect.py:322 - DEBUG] - 	 owner Class: java.util.concurrent.ConcurrentHashMap$MapEntry level 0 param_sig Ljava/lang/Object;
+[2025-12-22 11:46:35,696 - reflect.py:330 - DEBUG] - discarding setValue name from Interface: java.util.Map$Entry at level 1
+[2025-12-22 11:46:35,697 - reflect.py:150 - DEBUG] - 
+meth: setValue
+  sig: (Ljava/lang/Object;)Ljava/lang/Object;
+  Public True
+  Private False
+  Protected False
+  Static False
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,697 - reflect.py:340 - DEBUG] - method selected 1 multiple signatures of [('(Ljava/lang/Object;)Ljava/lang/Object;', False, False)]
+[2025-12-22 11:46:35,697 - reflect.py:150 - DEBUG] - 
+meth: $deserializeLambda$
+  sig: (Ljava/lang/invoke/SerializedLambda;)Ljava/lang/Object;
+  Public False
+  Private True
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,697 - reflect.py:150 - DEBUG] - 
+meth: lambda$comparingByValue$827a17d5$1
+  sig: (Ljava/util/Comparator;Ljava/util/Map$Entry;Ljava/util/Map$Entry;)I
+  Public False
+  Private True
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,697 - reflect.py:150 - DEBUG] - 
+meth: lambda$comparingByKey$bbdbfea9$1
+  sig: (Ljava/util/Map$Entry;Ljava/util/Map$Entry;)I
+  Public False
+  Private True
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,697 - reflect.py:150 - DEBUG] - 
+meth: lambda$comparingByValue$1065357e$1
+  sig: (Ljava/util/Map$Entry;Ljava/util/Map$Entry;)I
+  Public False
+  Private True
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,697 - reflect.py:150 - DEBUG] - 
+meth: lambda$comparingByKey$6d558cbf$1
+  sig: (Ljava/util/Comparator;Ljava/util/Map$Entry;Ljava/util/Map$Entry;)I
+  Public False
+  Private True
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,697 - reflect.py:315 - DEBUG] - method comparingByValue has 2 multiple signatures in hierarchy of cls Class: java.util.concurrent.ConcurrentHashMap$MapEntry
+[2025-12-22 11:46:35,697 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig 
+[2025-12-22 11:46:35,697 - reflect.py:322 - DEBUG] - 	 owner Interface: java.util.Map$Entry level 1 param_sig Ljava/util/Comparator;
+[2025-12-22 11:46:35,697 - reflect.py:150 - DEBUG] - 
+meth: comparingByValue
+  sig: ()Ljava/util/Comparator;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,697 - reflect.py:150 - DEBUG] - 
+meth: comparingByValue
+  sig: (Ljava/util/Comparator;)Ljava/util/Comparator;
+  Public True
+  Private False
+  Protected False
+  Static True
+  Final False
+  Synchronized False
+  Volatile False
+  Transient False
+  Native False
+  Interface False
+  Abstract False
+  Strict False
+
+[2025-12-22 11:46:35,697 - reflect.py:340 - DEBUG] - method selected 2 multiple signatures of [('()Ljava/util/Comparator;', True, False), ('(Ljava/util/Comparator;)Ljava/util/Comparator;', True, False)]
+[2025-12-22 11:46:44,534 - negative_mining.py:65 - INFO] - Completed searching all queries, mined 6980 triples.
