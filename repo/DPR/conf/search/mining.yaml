@@ -2,4 +2,3 @@ name: mining_search
 topk: 100
 n_negative: 1   # DPR hyperparameter
 batch_size: 64
-output_dir: hard_negatives

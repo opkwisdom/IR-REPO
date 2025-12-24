@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 from typing import List, Optional, Dict, Any, Tuple
 import logging
 from tqdm import tqdm
+from collections import defaultdict
 
 from .structure import Qrel, Query, Document, Triple
 
@@ -22,16 +23,16 @@ def load_collection(file_path: str, logger: Optional[logging.Logger] = None) -> 
         logger.info(f"Loaded {len(collection)} documents.")
     return collection
 
-def load_qrels(file_path: str, logger: Optional[logging.Logger] = None) -> Dict[str, str]:
+def load_qrels(file_path: str, logger: Optional[logging.Logger] = None) -> Dict[str, List[str]]:
     if logger is not None:
         logger.info(f"Loading qrels from {file_path}...")
     
-    qrels = {}
+    qrels = defaultdict(list)
     with open(file_path, 'r') as f:
         for line in tqdm(f, desc="Loading qrels"):
             data = json.loads(line)
             if data['relevance'] > 0:
-                qrels[data['query_id']] = data['doc_id']
+                qrels[data['query_id']].append(data['doc_id'])
 
     if logger is not None:
         logger.info(f"Loaded {len(qrels)} qrels.")

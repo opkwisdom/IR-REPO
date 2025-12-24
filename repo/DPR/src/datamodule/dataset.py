@@ -38,7 +38,7 @@ class DPRDataset(Dataset):
 class DPRDataModule(pl.LightningDataModule):
     def __init__(self, cfg: DictConfig, tokenizer: AutoTokenizer):
         super().__init__()
-        self.data_cfg = cfg.data
+        self.data_cfg = cfg.dataset
         self.train_cfg = cfg.train
         self.seed = cfg.seed
         self.tokenizer = tokenizer
@@ -105,6 +105,7 @@ class DPRDataModule(pl.LightningDataModule):
         )
 
 
+### Test code
 if __name__ == "__main__":
     triple_path = "/home/ir_repo/work/repo/DPR/src/hard_negatives/msmarco.jsonl"
     queries_path = "/home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/train_queries.jsonl"

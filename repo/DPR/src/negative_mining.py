@@ -70,17 +70,18 @@ def main(cfg: DictConfig):
     set_seed(cfg.seed)
 
     # Initialize Lucene Searcher
-    searcher = LuceneSearcher(cfg.index.path)
-    logger.info(f"Initialized LuceneSearcher with index at {cfg.index.path}")
+    cfg_indexer = cfg.index[cfg.index_key]
+    searcher = LuceneSearcher(cfg_indexer.path)
+    logger.info(f"Initialized LuceneSearcher with index at {cfg_indexer.path}")
 
     # Load datasets
-    queries = load_queries(cfg.data.queries_path, logger)
-    qrels = load_qrels(cfg.data.qrels_path, logger)
+    queries = load_queries(cfg.dataset.queries_path, logger)
+    qrels = load_qrels(cfg.dataset.qrels_path, logger)
 
     # Perform search and save results
     search_results = mining_negatives(cfg.search, searcher, queries, qrels, logger)
-    output_dir = os.path.join(cfg.search.output_dir, f"{cfg.data.name}.jsonl")
-    os.makedirs(cfg.search.output_dir, exist_ok=True)
+    output_dir = os.path.join(cfg.output_dir, f"{cfg.dataset.name}.jsonl")
+    os.makedirs(cfg.output_dir, exist_ok=True)
 
     with open(output_dir, "w") as f:
         for triple in search_results:

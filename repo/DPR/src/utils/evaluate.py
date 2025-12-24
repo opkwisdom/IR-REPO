@@ -3,11 +3,9 @@ import logging
 import math
 from collections import defaultdict
 
-from .structure import Qrel
-
 def evaluate_search_results(
     search_results: Dict[str, List[str]],
-    qrels: List[Qrel],
+    qrels: Dict[str, List[str]],
     k_values: List[int] = [1, 5, 10, 20, 50, 100, 1000],
     logger: logging.Logger = None
 ) -> Dict[str, float]:
@@ -23,17 +21,11 @@ def evaluate_search_results(
         metrics[f'nDCG@{k}'] = []
         metrics[f'MRR@{k}'] = []
 
-    # Convert qrels to a dictionary for easy lookup
-    qrel_dict = defaultdict(set)
-    for qrel in qrels:
-        if qrel.relevance > 0:
-            qrel_dict[qrel.query_id].add(qrel.doc_id)
-
     for qid, doc_ids in search_results.items():
-        if qid not in qrel_dict:
+        if qid not in qrels:
             continue
         
-        relevant_docs = qrel_dict[qid]
+        relevant_docs = qrels[qid]
 
         for k in k_values:
             top_k_hits = doc_ids[:k]

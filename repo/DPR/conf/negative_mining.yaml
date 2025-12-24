@@ -1,10 +1,13 @@
 defaults:
   - _self_
-  - data/mining: msmarco_mining
-  - index: msmarco
+  - data: msmarco
+  - index: bm25
   - search: mining
 
-output_dir: ./outputs
+dataset: ${data.mining}   # Use specific section
+index_key: msmarco        # Which index do we use
+
+output_dir: hard_negatives
 seed: 42
 device: cpu
 

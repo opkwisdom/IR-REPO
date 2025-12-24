@@ -1,9 +1,0 @@
-hydra:
-  job_logging:
-    disable_existing_loggers: False
-    root:
-      level: ERROR
-      handlers: {}
-    handlers: {}
-  hydra_logging:
-    disable_existing_loggers: True

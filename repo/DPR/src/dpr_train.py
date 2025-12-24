@@ -16,10 +16,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import WandbLogger
 
 from utils import (
-    load_queries,
-    load_qrels,
     set_seed,
-    Query, Qrel, Triple
 )
 from datamodule import DPRDataModule
 from model import DPREncoder, DPRLightningModule
@@ -55,7 +52,7 @@ def main(cfg: DictConfig):
         project="Dense_Retrieval_Reproduce",
         group=cfg.exp_model,
         name=cfg.exp_name,
-        tags=[cfg.exp_model, cfg.data.name]
+        tags=[cfg.exp_model, cfg.dataset.name]
     )
     
     # Setup trainer
