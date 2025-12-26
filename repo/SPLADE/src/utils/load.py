@@ -69,3 +69,30 @@ def load_triples(file_path: str, logger: Optional[logging.Logger] = None) -> Lis
     if logger is not None:
         logger.info(f"Loaded {len(triples)} triples.")
     return triples
+
+
+### Loading dev set, for evaluation
+# This dataset would be naive dataset, containing queries and Top-1000 bm25 retrieved docs
+def load_dev(file_path: str, logger: Optional[logging.Logger] = None) -> List[Dict[str, List[str]]]:
+    if logger is not None:
+        logger.info(f"Loading dev set from {file_path}...")
+    
+    with open(file_path, 'r') as f:
+        dev_data = json.load(f)
+    # Format compatibility
+    dev_data = [
+        {k: v} for k, v in dev_data.items()
+    ]
+
+    if logger is not None:
+        logger.info(f"Loaded {len(dev_data)} dev entries.")
+    return dev_data
+
+
+if __name__ == "__main__":
+    dev_path = "/home/ir_repo/work/hdd/data/dev/msmarco/bm25_topk_dev.json"
+    dev_data = load_dev(dev_path)
+
+    entry = dev_data[0]
+    import pdb; pdb.set_trace()
+    x=1

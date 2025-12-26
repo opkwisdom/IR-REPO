@@ -25,13 +25,15 @@ class DPRDataset(Dataset):
         triple = self.triples[idx]
         
         query_text = self.queries[triple.qid]
-        pos_doc_text = self.collection[triple.pos_id]
-        neg_doc_text = self.collection[triple.neg_id]
+        pos_doc = self.collection[triple.pos_id]
+        neg_doc = self.collection[triple.neg_id]
 
         return {
             "query_text": query_text,
-            "pos_doc_text": pos_doc_text,
-            "neg_doc_text": neg_doc_text,
+            "pos_title": pos_doc["title"],
+            "pos_contents": pos_doc["contents"],
+            "neg_title": neg_doc["title"],
+            "neg_contents": neg_doc["contents"],
         }
 
 
@@ -60,8 +62,12 @@ class DPRDataModule(pl.LightningDataModule):
 
     def collate_fn(self, batch):
         query_texts = [item["query_text"] for item in batch]
-        pos_doc_texts = [item["pos_doc_text"] for item in batch]
-        neg_doc_texts = [item["neg_doc_text"] for item in batch]
+
+        # Bert-style input: [CLS] title [SEP] contents [SEP]
+        pos_titles = [item["pos_title"] for item in batch]
+        pos_contents = [item["pos_contents"] for item in batch]
+        neg_titles = [item["neg_title"] for item in batch]
+        neg_contents = [item["neg_contents"] for item in batch]
 
         q_inputs = self.tokenizer(
             query_texts,
@@ -72,7 +78,8 @@ class DPRDataModule(pl.LightningDataModule):
             return_token_type_ids=False
         )
         p_inputs = self.tokenizer(
-            pos_doc_texts + neg_doc_texts,
+            text=pos_titles + neg_titles,
+            text_pair=pos_contents + neg_contents,
             padding=True,
             truncation=True,
             max_length=self.data_cfg.max_passage_length,

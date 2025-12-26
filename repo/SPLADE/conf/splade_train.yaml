@@ -1,22 +1,18 @@
 defaults:
   - _self_
-  - data: msmarco
+  - data: msmarco       # default dataset
   - model: base
-  - index: faiss
-  - search: eval
+  - train: base
 
-dataset: ${data.search}  # Use specific section
-index_key: flat
+dataset: ${data.train}  # Use specific section
 
 seed: 42
 device: cuda
+num_device: 4
 
-### indexing.yaml and retrieval.yaml should have same ckpt_dir & ckpt_file
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/tuned
-ckpt_file: dpr-epoch=01-val_loss=0.2806.ckpt
-
-index_dir: /home/ir_repo/work/hdd/index/dpr/msmarco/tuned
-output_dir: /home/ir_repo/work/repo/DPR/results/msmarco
+ckpt_dir: /home/ir_repo/work/hdd/checkpoint/splade/msmarco/tuned
+exp_model: SPLADE
+exp_name: splade_msmarco_train
 
 
 # hydra 설정

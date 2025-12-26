@@ -8,6 +8,7 @@ search:
   batch_size: 64
 
 output_dir: ./outputs
+bm25_result_dir: /home/ir_repo/work/hdd/data/dev
 seed: 42
 
 

@@ -23,7 +23,7 @@ logger = logging.getLogger(__file__)
 
 def gen_ctx_vectors(
     rank: int,
-    shard_collection: Dict[str, str],
+    shard_collection: Dict[str, Dict[str, str]],
     encoder: Union[Encoder, DDP],
     tokenizer: AutoTokenizer,
     cfg: DictConfig
@@ -47,11 +47,15 @@ def gen_ctx_vectors(
     iterator = tqdm(range(0, total_len, batch_size), desc=f"GPU {rank}", position=rank)
     for start_idx in iterator:
         end_idx = min(total_len, start_idx + batch_size)
-        batch_texts = all_texts[start_idx:end_idx]
         batch_ids = all_pids[start_idx:end_idx]
+        batch_data = all_texts[start_idx:end_idx]
+
+        batch_titles = [d["title"] for d in batch_data]
+        batch_texts = [d["contents"] for d in batch_data]
 
         inputs = tokenizer(
-            batch_texts,
+            text=batch_titles,
+            text_pair=batch_texts,
             padding=True,
             truncation=True,
             max_length=cfg.dataset.max_passage_length,
@@ -70,7 +74,7 @@ def gen_ctx_vectors(
     return ctx_vectors, ctx_ids
 
 
-def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, str]], cfg: DictConfig):
+def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, Dict[str, str]]], cfg: DictConfig):
     setup(rank, world_size)
     
     # Load Lightning model & tokenizer
@@ -89,7 +93,7 @@ def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, str
     cleanup()
 
 
-def get_shards(collection: Dict[str, str], num_shards: int) -> List[Dict[str, str]]:
+def get_shards(collection: Dict[str, Dict[str, str]], num_shards: int) -> List[Dict[str, Dict[str, str]]]:
     all_pids = list(collection.keys())
     shard_size = len(all_pids) // num_shards
     shards = []
@@ -114,6 +118,7 @@ def main(cfg: DictConfig):
     shards = get_shards(collection, world_size)
 
     # Multi-Process DDP indexing
+    os.makedirs(cfg.output_dir, exist_ok=True)
     mp.spawn(ddp_worker, args=(world_size, shards, cfg), nprocs=world_size, join=True)
 
     # Gather all vectors and ids from shards
@@ -134,7 +139,6 @@ def main(cfg: DictConfig):
     cfg_index = cfg.index[cfg.index_key]
     indexer = FaissIndexer(cfg_index)
     indexer.index_data(ctx_ids, ctx_vectors, buffer_size=cfg_index.buffer_size)
-    os.makedirs(cfg.output_dir, exist_ok=True)
     indexer.save(os.path.join(cfg.output_dir, f"{cfg.dataset.name}_faiss"))
 
 if __name__ == "__main__":

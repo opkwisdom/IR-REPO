@@ -1,0 +1,7 @@
+msmarco:
+  path: /home/ir_repo/work/hdd/index/bm25/msmarco
+  threads: 16
+
+wiki_w100:
+  path: /home/ir_repo/work/hdd/index/bm25/psgs_w100
+  threads: 16

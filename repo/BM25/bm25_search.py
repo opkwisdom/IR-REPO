@@ -56,12 +56,23 @@ def main(cfg: DictConfig):
     searcher = LuceneSearcher(cfg.index.path)
     logger.info(f"Initialized LuceneSearcher with index at {cfg.index.path}")
 
+    if cfg.data.name == "msmarco":
+        k1 = 0.82
+        b = 0.68
+        searcher.set_bm25(k1=k1, b=b)
+        logger.info(f"Set BM25 parameters: k1={k1}, b={b}")
+
     # Load datasets
     queries = load_queries(cfg.data.queries_path, logger)
     qrels = load_qrels(cfg.data.qrels_path, logger)
 
     # Perform search and save results
     search_results = search_documents(cfg.search, searcher, queries, logger)
+    bm25_result_dir = os.path.join(cfg.bm25_result_dir, cfg.data.name)
+    os.makedirs(bm25_result_dir, exist_ok=True)
+    result_path = os.path.join(bm25_result_dir, "bm25_topk_dev.json")
+    with open(result_path, 'w', encoding='utf-8') as f:
+        json.dump(search_results, f, indent=4)
 
     # Save results to output file
     eval_results = evaluate_search_results(search_results, qrels, logger=logger)

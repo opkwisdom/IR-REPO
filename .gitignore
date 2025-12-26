@@ -7,6 +7,7 @@ hdd
 
 ### Data
 **/*.jsonl
+**/*.json
 
 ### Log
 **/outputs

@@ -1,22 +1,15 @@
 defaults:
   - _self_
   - data: msmarco
-  - model: base
-  - index: faiss
-  - search: eval
+  - index: bm25
+  - search: mining
 
-dataset: ${data.search}  # Use specific section
-index_key: flat
+dataset: ${data.mining}   # Use specific section
+index_key: msmarco        # Which index do we use
 
+output_dir: hard_negatives
 seed: 42
-device: cuda
-
-### indexing.yaml and retrieval.yaml should have same ckpt_dir & ckpt_file
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/tuned
-ckpt_file: dpr-epoch=01-val_loss=0.2806.ckpt
-
-index_dir: /home/ir_repo/work/hdd/index/dpr/msmarco/tuned
-output_dir: /home/ir_repo/work/repo/DPR/results/msmarco
+device: cpu
 
 
 # hydra 설정
