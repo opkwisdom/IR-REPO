@@ -14,7 +14,7 @@ from utils import (
     load_queries,
     load_qrels,
     set_seed,
-    Query, Qrel, Triple
+    Query, Qrel, TripleCandidates
 )
 
 logger = logging.getLogger(__file__)
@@ -25,8 +25,8 @@ def mining_negatives(
     queries: Dict[str, str],
     qrels: Dict[str, List[str]],
     logger: logging.Logger = None
-) -> List[Triple]:
-    triples = []
+) -> List[TripleCandidates]:
+    triple_candidates = []
 
     topk = cfg.topk
     batch_size = cfg.batch_size
@@ -46,22 +46,16 @@ def mining_negatives(
         batch_search_res = searcher.batch_search(query_texts, batch_qids, k=topk) # (B, topk)
         for qid, hits in batch_search_res.items():
             pos_id = qrels[qid]  # Take the first relevant doc as positive
-            neg_id = None
-
-            # Sample negative document randomly
-            candidate_indices = [
-                i for i, hit in enumerate(hits) 
-                if hit.docid not in pos_id
+            neg_ids = [
+                hit.docid for hit in hits if hit.docid not in pos_id
             ]
+            triple_candidates.append(
+                TripleCandidates(qid=qid, pos_id=pos_id[0], neg_ids=neg_ids)
+            )
 
-            if candidate_indices:
-                random_idx = random.choice(candidate_indices)
-                neg_id = hits[random_idx].docid
-                triples.append(Triple(qid=qid, pos_id=pos_id[0], neg_id=neg_id))    # Use the first positive passage
+    logger.info(f"Completed searching all queries, mined {len(triple_candidates)} triples.")
 
-    logger.info(f"Completed searching all queries, mined {len(triples)} triples.")
-
-    return triples
+    return triple_candidates
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="negative_mining")

@@ -35,7 +35,8 @@ def main(cfg: DictConfig):
         monitor='val_mrr_10',
         filename='dpr-{epoch:02d}-{val_mrr_10:.4f}',
         save_top_k=3,
-        mode='max'
+        mode='max',
+        save_last=True
     )
     lr_monitor = LearningRateMonitor(logging_interval='step')
     callbacks = [checkpoint_cb, lr_monitor]

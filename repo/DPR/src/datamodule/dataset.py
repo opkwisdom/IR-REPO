@@ -3,30 +3,39 @@ import torch
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 from transformers import AutoTokenizer
+from typing import Dict
+import logging
+import random
 
 from typing import List
 from utils import (
-    load_triples,
+    load_triple_candidates,
     load_queries,
+    load_qrels,
+    load_dev,
     load_collection,
 )
 
+logger = logging.getLogger(__name__)
+
 class DPRDataset(Dataset):
-    def __init__(self, triple_path: str, queries_path: str, collection_path: str):
+    def __init__(self, triple_path: str, queries_path: str, collection: Dict[str, Dict[str, str]]):
         super().__init__()
-        self.triples = load_triples(triple_path)
+        self.triple_candidates = load_triple_candidates(triple_path)
         self.queries = load_queries(queries_path)
-        self.collection = load_collection(collection_path)
+        self.collection = collection
 
     def __len__(self):
-        return len(self.triples)
+        return len(self.triple_candidates)
 
     def __getitem__(self, idx):
-        triple = self.triples[idx]
-        
+        triple = self.triple_candidates[idx]
+
         query_text = self.queries[triple.qid]
         pos_doc = self.collection[triple.pos_id]
-        neg_doc = self.collection[triple.neg_id]
+
+        neg_id = random.choice(triple.neg_ids)
+        neg_doc = self.collection[neg_id]
 
         return {
             "query_text": query_text,
@@ -37,30 +46,68 @@ class DPRDataset(Dataset):
         }
 
 
+class DPRDevDataset(Dataset):
+    def __init__(self, dev_queries_path: str, dev_qrels_path: str, dev_path: str, collection: Dict[str, Dict[str, str]]):
+        super().__init__()
+        self.dev_queries = load_queries(dev_queries_path)
+        self.dev_qrels = load_qrels(dev_qrels_path)
+        self.dev_data = load_dev(dev_path)
+        self.collection = collection
+    
+    def get_topk_dev(self):
+        return self.dev_data
+
+    def get_qrels(self):
+        return self.dev_qrels
+
+    def __len__(self):
+        return len(self.dev_data)
+    
+    def __getitem__(self, idx):
+        entry = self.dev_data[idx]
+        query_id, passage_ids = list(entry.items())[0]
+        return {
+            "query_id": query_id,
+            "passage_ids": passage_ids,
+            "query_text": self.dev_queries[query_id],
+            "passage_titles": [self.collection[idx]["title"] for idx in passage_ids],
+            "passage_contents": [self.collection[idx]["contents"] for idx in passage_ids],
+        }
+
+
 class DPRDataModule(pl.LightningDataModule):
     def __init__(self, cfg: DictConfig, tokenizer: AutoTokenizer):
         super().__init__()
+        self.save_hyperparameters(cfg)
         self.data_cfg = cfg.dataset
         self.train_cfg = cfg.train
         self.seed = cfg.seed
         self.tokenizer = tokenizer
 
+        self.collection = None
+        self.train_dataset = None
+        self.val_dataset = None
+
     def setup(self, stage=None):
+        if self.collection is None:
+            logger.info("Loading collection...")
+            self.collection = load_collection(self.data_cfg.collection_path)
+            logger.info("Collection loaded.")
+
         if stage == "fit" or stage is None:
-            full_dataset = DPRDataset(
+            self.train_dataset = DPRDataset(
                 triple_path=self.data_cfg.triple_path,
                 queries_path=self.data_cfg.queries_path,
-                collection_path=self.data_cfg.collection_path,
+                collection=self.collection,
             )
-            train_size = int((1 - self.data_cfg.test_size) * len(full_dataset))
-            val_size = len(full_dataset) - train_size
-            self.train_dataset, self.val_dataset = random_split(
-                full_dataset,
-                [train_size, val_size],
-                generator=torch.Generator().manual_seed(self.seed)
+            self.val_dataset = DPRDevDataset(
+                dev_queries_path=self.data_cfg.dev_queries_path,
+                dev_qrels_path=self.data_cfg.dev_qrels_path,
+                dev_path=self.data_cfg.bm25_dev_path,
+                collection=self.collection,
             )
 
-    def collate_fn(self, batch):
+    def train_collate_fn(self, batch):
         query_texts = [item["query_text"] for item in batch]
 
         # Bert-style input: [CLS] title [SEP] contents [SEP]
@@ -91,6 +138,33 @@ class DPRDataModule(pl.LightningDataModule):
             "passages": p_inputs,
         }
 
+    def val_collate_fn(self, batch):
+        batch = batch[0]    # unpack
+        
+        q_inputs = self.tokenizer(
+            [batch["query_text"]],
+            padding=True,
+            truncation=True,
+            max_length=self.data_cfg.max_query_length,
+            return_tensors="pt",
+            return_token_type_ids=False
+        )
+        p_inputs = self.tokenizer(
+            text=batch["passage_titles"],
+            text_pair=batch["passage_contents"],
+            padding=True,
+            truncation=True,
+            max_length=self.data_cfg.max_passage_length,
+            return_tensors="pt",
+            return_token_type_ids=False
+        )
+        return {
+            "query_id": batch["query_id"],
+            "passage_ids": batch["passage_ids"],
+            "queries": q_inputs,    # input_ids, attention_mask
+            "passages": p_inputs,
+        }
+
     def train_dataloader(self):
         return DataLoader(
             self.train_dataset,
@@ -98,30 +172,15 @@ class DPRDataModule(pl.LightningDataModule):
             shuffle=True,
             num_workers=self.data_cfg.num_workers,
             pin_memory=True,
-            collate_fn=self.collate_fn,
+            collate_fn=self.train_collate_fn,
         )
     
     def val_dataloader(self):
         return DataLoader(
             self.val_dataset,
-            batch_size=self.train_cfg.per_device_batch_size,
+            batch_size=1,
             shuffle=False,
             num_workers=self.data_cfg.num_workers,
             pin_memory=True,
-            collate_fn=self.collate_fn,
+            collate_fn=self.val_collate_fn,
         )
-
-
-### Test code
-if __name__ == "__main__":
-    triple_path = "/home/ir_repo/work/repo/DPR/src/hard_negatives/msmarco.jsonl"
-    queries_path = "/home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/train_queries.jsonl"
-    collection_path = "/home/ir_repo/work/hdd/data/preprocessed/msmarco_collection/collection.jsonl"
-    dataset = DPRDataset(
-        triple_path=triple_path,
-        queries_path=queries_path,
-        collection_path=collection_path,
-    )
-
-    print(len(dataset))
-    print(dataset[0])

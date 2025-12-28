@@ -27,12 +27,12 @@ train:
   name: ${data.common.name}
   triple_path: /home/ir_repo/work/repo/SPLADE/src/hard_negatives/msmarco.jsonl
   queries_path: ${data.common.queries_train}
+  collection_path: ${data.common.collection}
   
   ### Evaluation
-  queries_dev_path: ${data.common.queries_dev}
-  qrels_dev_path: ${data.common.qrels_dev}
-  bm25_dev_path: ${data.common.bm25_dev_debug}
-  collection_path: ${data.common.collection}
+  dev_queries_path: ${data.common.queries_dev}
+  dev_qrels_path: ${data.common.qrels_dev}
+  bm25_dev_path: ${data.common.bm25_dev}
 
   ### Data-specific
   max_query_length: 64

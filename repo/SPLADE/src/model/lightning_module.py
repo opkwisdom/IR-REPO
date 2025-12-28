@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch
 from typing import Dict, List
 from omegaconf import DictConfig
+from transformers import get_linear_schedule_with_warmup
 
 from .models import SpladeEncoder
 from utils import evaluate_search_results
@@ -18,6 +19,10 @@ class SpladeLightningModule(pl.LightningModule):
         self.learning_rate = cfg.train.learning_rate
         self.model.train()
         self.val_results: Dict[str, List[str]] = {}
+        
+        # Set lambda (scheduled)
+        self.lambda_q = self.cfg.FLOPS.lambda_q
+        self.lambda_p = self.cfg.FLOPS.lambda_p
 
     def forward(self, batch):
         q_sparse_emb = self.model.query_emb(**batch["queries"])
@@ -48,14 +53,13 @@ class SpladeLightningModule(pl.LightningModule):
         reg_q_loss = torch.sum(mean_q_act ** 2)
         reg_p_loss = torch.sum(mean_p_act ** 2)
 
-        loss = rank_loss + self.cfg.lambda_q * reg_q_loss + self.cfg.lambda_p * reg_p_loss
+        self.compute_lambdas()  # Lambda Scheduling
+        loss = rank_loss + self.lambda_t_q * reg_q_loss + self.lambda_t_p * reg_p_loss
 
         self.log("train_loss", loss, prog_bar=True, sync_dist=True, batch_size=q_sparse_emb.shape[0])  # Trainer api
         return loss
 
     def validation_step(self, batch, batch_idx):
-        # self.val_results[batch["query_id"]] = batch["passage_ids"]
-
         CHUNK_SIZE = 256
         total_scores = []
         
@@ -93,10 +97,36 @@ class SpladeLightningModule(pl.LightningModule):
             dev_qrels,
             k_values=[10]
         )
-        self.log("val_mrr_10", eval_results["MRR@10"])
-        self.log("val_recall_10", eval_results["Recall@10"])
-        self.log("val_ndcg_10", eval_results["nDCG@10"])
+        self.log("val_mrr_10", eval_results["MRR@10"], sync_dist=True)
+        self.log("val_recall_10", eval_results["Recall@10"], sync_dist=True)
+        self.log("val_ndcg_10", eval_results["nDCG@10"], sync_dist=True)
         self.val_results.clear()
 
+    def compute_lambdas(self):
+        self.lambda_t_q = min(self.lambda_q, self.lambda_q * ((self.global_step) / (self.cfg.FLOPS.T + 1)) ** 2)
+        self.lambda_t_p = min(self.lambda_p, self.lambda_p * ((self.global_step) / (self.cfg.FLOPS.T + 1)) ** 2)
+
     def configure_optimizers(self):
-        return torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
+        optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.learning_rate)
+        
+        if self.trainer.max_steps == -1:
+            total_steps = self.trainer.estimated_stepping_batches
+        else:
+            total_steps = self.trainer.max_steps
+        warmup_steps = self.hparams.cfg.train.warmup_steps
+
+        scheduler = get_linear_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=warmup_steps,
+            num_training_steps=total_steps
+        )
+        
+        # Setup scheduler
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "interval": "step",
+                "frequency": 1
+            }
+        }

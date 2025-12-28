@@ -32,10 +32,11 @@ def main(cfg: DictConfig):
     # Setup callbacks
     checkpoint_cb = ModelCheckpoint(
         dirpath=cfg.ckpt_dir,
-        monitor='val_loss',
-        filename='dpr-{epoch:02d}-{val_loss:.4f}',
+        monitor='val_mrr_10',
+        filename='dpr-{epoch:02d}-{val_mrr_10:.4f}',
         save_top_k=3,
-        mode='min'
+        mode='max',
+        save_last=True
     )
     lr_monitor = LearningRateMonitor(logging_interval='step')
     callbacks = [checkpoint_cb, lr_monitor]

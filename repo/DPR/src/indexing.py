@@ -16,7 +16,8 @@ from indexer import FaissIndexer
 from utils import (
     load_collection,
     set_seed,
-    setup, cleanup
+    setup, cleanup,
+    get_best_checkpoint
 )
 
 logger = logging.getLogger(__file__)
@@ -78,7 +79,8 @@ def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, Dic
     setup(rank, world_size)
     
     # Load Lightning model & tokenizer
-    ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
+    ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
+    # ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
     lightning_module = DPRLightningModule.load_from_checkpoint(ckpt_path)
     context_encoder = lightning_module.model.context_model.to(rank)
     context_encoder = DDP(context_encoder, device_ids=[rank])

@@ -28,3 +28,8 @@ class Triple:
     pos_id: str
     neg_id: str
 
+@dataclass
+class TripleCandidates:
+    qid: str
+    pos_id: str
+    neg_ids: List[str]

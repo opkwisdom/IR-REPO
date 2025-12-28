@@ -16,7 +16,8 @@ from utils import (
     load_qrels,
     set_seed,
     evaluate_search_results,
-    format_results_nested
+    format_results_nested,
+    get_best_checkpoint
 )
 
 logger = logging.getLogger(__file__)
@@ -68,7 +69,8 @@ def main(cfg: DictConfig):
     qrels = load_qrels(cfg.dataset.qrels_path, logger)
 
     # Load Lightning model & tokenizer
-    ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
+    ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
+    # ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
     lightning_module = DPRLightningModule.load_from_checkpoint(ckpt_path)
     query_encoder = lightning_module.model.query_model.to(cfg.device)
     query_encoder.eval()

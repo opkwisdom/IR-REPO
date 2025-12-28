@@ -1,4 +1,4 @@
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoConfig
 import torch.nn as nn
 import torch
 
@@ -6,9 +6,14 @@ from .interface import BiEncoder
 
 
 class Encoder(nn.Module):
-    def __init__(self, model_name_or_path: str):
+    def __init__(self, model_name_or_path: str, dropout: float = 0.1):
         super().__init__()
-        self.model = AutoModel.from_pretrained(model_name_or_path)
+        config = AutoConfig.from_pretrained(
+            model_name_or_path,
+            hidden_dropout_prob=dropout,
+            attention_probs_dropout_prob=dropout
+        )
+        self.model = AutoModel.from_pretrained(model_name_or_path, config=config)
     
     def forward(self, input_ids, attention_mask):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)

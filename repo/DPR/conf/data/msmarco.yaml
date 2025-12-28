@@ -10,6 +10,10 @@ common:
   collection_debug: /home/ir_repo/work/hdd/data/debug/collection_100k.jsonl
   queries_train_debug: /home/ir_repo/work/hdd/data/debug/train_queries_10k.jsonl
   queries_dev_debug: /home/ir_repo/work/hdd/data/debug/dev_queries_1k.jsonl
+  bm25_dev_debug: /home/ir_repo/work/hdd/data/debug/bm25_topk_dev_100.json
+
+  ### Dev path (used for naive evaluation)
+  bm25_dev: /home/ir_repo/work/hdd/data/dev/msmarco/bm25_topk_dev.json
 
 ### Specific sections
 mining:
@@ -24,13 +28,18 @@ train:
   queries_path: ${data.common.queries_train}
   collection_path: ${data.common.collection}
 
+  ### Evaluation
+  dev_queries_path: ${data.common.queries_dev}
+  dev_qrels_path: ${data.common.qrels_dev}
+  bm25_dev_path: ${data.common.bm25_dev}
+
   ### Data-specific
   max_query_length: 64
-  max_passage_length: 128
+  max_passage_length: 256
   test_size: 0.1
 
   ### Others
-  num_workers: 8
+  num_workers: 0
 
 
 index:
@@ -38,7 +47,7 @@ index:
   collection_path: ${data.common.collection}
 
   ### Data-specific
-  max_passage_length: 128
+  max_passage_length: 256
 
 search:
   name: ${data.common.name}

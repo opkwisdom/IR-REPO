@@ -4,10 +4,11 @@ import pytorch_lightning as pl
 from omegaconf import DictConfig
 from transformers import AutoTokenizer
 import logging
+import random
 
 from typing import List, Dict
 from utils import (
-    load_triples,
+    load_triple_candidates,
     load_queries,
     load_qrels,
     load_collection,
@@ -19,19 +20,21 @@ logger = logging.getLogger(__name__)
 class SpladeDataset(Dataset):
     def __init__(self, triple_path: str, queries_path: str, collection: Dict[str, Dict[str, str]]):
         super().__init__()
-        self.triples = load_triples(triple_path)
+        self.triple_candidates = load_triple_candidates(triple_path)
         self.queries = load_queries(queries_path)
         self.collection = collection
 
     def __len__(self):
-        return len(self.triples)
+        return len(self.triple_candidates)
 
     def __getitem__(self, idx):
-        triple = self.triples[idx]
-        
+        triple = self.triple_candidates[idx]
+
         query_text = self.queries[triple.qid]
         pos_doc = self.collection[triple.pos_id]
-        neg_doc = self.collection[triple.neg_id]
+        
+        neg_id = random.choice(triple.neg_ids)
+        neg_doc = self.collection[neg_id]
 
         return {
             "query_text": query_text,
@@ -96,15 +99,15 @@ class SpladeDataModule(pl.LightningDataModule):
                 collection=self.collection,
             )
             self.val_dataset = SpladeDevDataset(
-                dev_queries_path=self.data_cfg.queries_dev_path,
-                dev_qrels_path=self.data_cfg.qrels_dev_path,
+                dev_queries_path=self.data_cfg.dev_queries_path,
+                dev_qrels_path=self.data_cfg.dev_qrels_path,
                 dev_path=self.data_cfg.bm25_dev_path,
                 collection=self.collection,
             )
         elif stage == "validate":
             self.val_dataset = SpladeDevDataset(
-                dev_queries_path=self.data_cfg.queries_dev_path,
-                dev_qrels_path=self.data_cfg.qrels_dev_path,
+                dev_queries_path=self.data_cfg.dev_queries_path,
+                dev_qrels_path=self.data_cfg.dev_qrels_path,
                 dev_path=self.data_cfg.bm25_dev_path,
                 collection=self.collection,
             )
