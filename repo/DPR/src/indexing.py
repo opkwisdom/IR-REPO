@@ -11,7 +11,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 import torch.multiprocessing as mp
 from tqdm import tqdm
 
-from model import DPRLightningModule, Encoder
+from model import DPRLightningModule, Encoder, DPREncoder
 from indexer import FaissIndexer
 from utils import (
     load_collection,
@@ -81,7 +81,8 @@ def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, Dic
     # Load Lightning model & tokenizer
     ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
     # ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
-    lightning_module = DPRLightningModule.load_from_checkpoint(ckpt_path)
+    backbone = DPREncoder(cfg.model)
+    lightning_module = DPRLightningModule.load_from_checkpoint(ckpt_path, model=backbone)
     context_encoder = lightning_module.model.context_model.to(rank)
     context_encoder = DDP(context_encoder, device_ids=[rank])
     context_encoder.eval()

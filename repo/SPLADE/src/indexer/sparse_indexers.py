@@ -1,34 +1,21 @@
-import faiss
 import logging
 import numpy as np
 import os
 import pickle
 from tqdm import tqdm
 import time
+import torch
 from omegaconf import DictConfig
 
 from typing import List, Tuple, Dict
 
 logger = logging.getLogger()
 
-class FaissIndexer:
+class SparseIndexer:
     def __init__(self, cfg: DictConfig):
         self.cfg = cfg
         self.index_type = cfg.index_type
-        self.vector_dim = cfg.vector_dim
-        self.index_id_to_db_id = []
-        self.index = self._create_index(self.index_type, self.vector_dim)
-
-    def _create_index(self, index_type: str, dim: int):
-        if index_type == "flat":
-            return faiss.IndexFlatIP(dim)
-        elif index_type == "hnsw":
-            index = faiss.IndexHNSWFlat(dim, self.cfg.M)  # the number of neighbors
-            index.hnsw.efConstruction = self.cfg.ef_construction
-            index.hnsw.efSearch = self.cfg.ef_search
-            return index
-        else:
-            raise ValueError(f"Unsupported index type: {index_type}")
+        self.index = None
         
     def index_data(self, ids: List[str], vectors: np.ndarray, buffer_size: int = 50000):
         """

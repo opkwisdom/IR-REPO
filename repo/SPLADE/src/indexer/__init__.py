@@ -1,1 +1,1 @@
-from .faiss_indexers import *
+from .sparse_indexers import *

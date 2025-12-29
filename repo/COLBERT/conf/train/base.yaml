@@ -4,7 +4,12 @@ gradient_accumulation_steps: 1
 
 learning_rate: 2e-5
 weight_decay: 0.01
-max_epochs: 5
-n_negative: 50
+max_epochs: 20
 
-warmup_steps: 500
+# Regularizer settings
+FLOPS:
+  lambda_q: 3e-4
+  lambda_p: 1e-4
+  T: 50000
+
+warmup_steps: 6000

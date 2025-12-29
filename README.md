@@ -40,3 +40,4 @@ pip install pytorch-lightning==2.5.6
 | Model | MRR@10 | nDCG@10 | Recall@10 |
 | :--- | :--- | :--- | :--- |
 | BM25 | 0.1874 | 0.2340 | 0.3916 |
+| DPR | 0.2677 | 0.3202 | 0.4975 |

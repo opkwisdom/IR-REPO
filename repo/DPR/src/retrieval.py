@@ -9,7 +9,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-from model import DPRLightningModule, Encoder
+from model import DPRLightningModule, Encoder, DPREncoder
 from indexer import FaissIndexer
 from utils import (
     load_queries,
@@ -71,7 +71,8 @@ def main(cfg: DictConfig):
     # Load Lightning model & tokenizer
     ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
     # ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
-    lightning_module = DPRLightningModule.load_from_checkpoint(ckpt_path)
+    backbone = DPREncoder(cfg.model)
+    lightning_module = DPRLightningModule.load_from_checkpoint(ckpt_path, model=backbone)
     query_encoder = lightning_module.model.query_model.to(cfg.device)
     query_encoder.eval()
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
@@ -90,6 +91,10 @@ def main(cfg: DictConfig):
     # Evaluate & save results
     eval_results = evaluate_search_results(topk_results, qrels, logger=logger)
     os.makedirs(cfg.output_dir, exist_ok=True)
+    results_output_path = os.path.join(cfg.output_dir, "dpr_topk_dev.json")
+    with open(results_output_path, "w", encoding="utf-8") as f:
+        json.dump(topk_results, f, indent=4, ensure_ascii=False)
+
     eval_output_path = os.path.join(cfg.output_dir, "metrics.json")
 
     with open(eval_output_path, "w", encoding="utf-8") as f:

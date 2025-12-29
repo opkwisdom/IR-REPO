@@ -1,11 +1,13 @@
 import json
+import logging
+import re
+import glob
 from dataclasses import dataclass, asdict
 from typing import List, Optional, Dict, Any, Tuple
-import logging
 from tqdm import tqdm
 from collections import defaultdict
 
-from .structure import Qrel, Query, Document, Triple
+from .structure import Qrel, Query, Document, Triple, TripleCandidates
 
 ### Loading collection, queries, qrels
 def load_collection(file_path: str, logger: Optional[logging.Logger] = None) -> Dict[str, Dict[str, str]]:
@@ -88,11 +90,33 @@ def load_dev(file_path: str, logger: Optional[logging.Logger] = None) -> List[Di
         logger.info(f"Loaded {len(dev_data)} dev entries.")
     return dev_data
 
+def load_triple_candidates(file_path: str, logger: Optional[logging.Logger] = None) -> List[TripleCandidates]:
+    if logger is not None:
+        logger.info(f"Loading triple candidates from {file_path}...")
 
-if __name__ == "__main__":
-    dev_path = "/home/ir_repo/work/hdd/data/dev/msmarco/bm25_topk_dev.json"
-    dev_data = load_dev(dev_path)
+    triple_candidates = []
+    with open(file_path, 'r') as f:
+        for line in tqdm(f, desc="Loading triple candidates"):
+            data = json.loads(line)
+            triple = TripleCandidates(**data)
+            triple_candidates.append(triple)
 
-    entry = dev_data[0]
-    import pdb; pdb.set_trace()
-    x=1
+    if logger is not None:
+        logger.info(f"Loaded {len(triple_candidates)} triple candidates.")
+    return triple_candidates
+
+def get_best_checkpoint(checkpoint_dir: str, metric: str = "val_mrr_10") -> str:
+    best_score = float("-inf")
+    best_checkpoint = None
+    
+    checkpoint_paths = glob.glob(f"{checkpoint_dir}/*.ckpt")
+    pattern = re.compile(rf".*{re.escape(metric)}=([0-9]+(?:\.[0-9]+)?)")
+    
+    for path in checkpoint_paths:
+        match = pattern.search(path)
+        if match:
+            score = float(match.group(1))
+            if score > best_score:
+                best_score = score
+                best_checkpoint = path
+    return best_checkpoint

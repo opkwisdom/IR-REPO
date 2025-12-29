@@ -46,6 +46,7 @@ def mining_negatives(
         batch_search_res = searcher.batch_search(query_texts, batch_qids, k=topk) # (B, topk)
         for qid, hits in batch_search_res.items():
             pos_id = qrels[qid]  # Take the first relevant doc as positive
+            import pdb; pdb.set_trace()
             neg_ids = [
                 hit.docid for hit in hits if hit.docid not in pos_id
             ]

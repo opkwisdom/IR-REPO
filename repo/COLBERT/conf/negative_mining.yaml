@@ -1,18 +1,15 @@
 defaults:
   - _self_
-  - data: msmarco       # default dataset
-  - model: base
-  - train: base
+  - data: msmarco
+  - index: bm25
+  - search: mining
 
-dataset: ${data.train}  # Use specific section
+dataset: ${data.mining}   # Use specific section
+index_key: msmarco        # Which index do we use
 
+output_dir: hard_negatives
 seed: 42
-device: cuda
-num_device: 4
-
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/epoch_5
-exp_model: DPR
-exp_name: dpr_msmarco_train
+device: cpu
 
 
 # hydra 설정

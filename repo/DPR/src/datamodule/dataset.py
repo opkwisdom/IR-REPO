@@ -19,11 +19,12 @@ from utils import (
 logger = logging.getLogger(__name__)
 
 class DPRDataset(Dataset):
-    def __init__(self, triple_path: str, queries_path: str, collection: Dict[str, Dict[str, str]]):
+    def __init__(self, triple_path: str, queries_path: str, collection: Dict[str, Dict[str, str]], n_negative: int = 50):
         super().__init__()
         self.triple_candidates = load_triple_candidates(triple_path)
         self.queries = load_queries(queries_path)
         self.collection = collection
+        self.n_negative = n_negative
 
     def __len__(self):
         return len(self.triple_candidates)
@@ -34,7 +35,8 @@ class DPRDataset(Dataset):
         query_text = self.queries[triple.qid]
         pos_doc = self.collection[triple.pos_id]
 
-        neg_id = random.choice(triple.neg_ids)
+        topk_neg_ids = triple.neg_ids[:self.n_negative]
+        neg_id = random.choice(topk_neg_ids)
         neg_doc = self.collection[neg_id]
 
         return {
@@ -99,6 +101,7 @@ class DPRDataModule(pl.LightningDataModule):
                 triple_path=self.data_cfg.triple_path,
                 queries_path=self.data_cfg.queries_path,
                 collection=self.collection,
+                n_negative=self.train_cfg.n_negative,
             )
             self.val_dataset = DPRDevDataset(
                 dev_queries_path=self.data_cfg.dev_queries_path,
