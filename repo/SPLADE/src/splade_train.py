@@ -5,6 +5,7 @@ import torch
 from transformers import AutoTokenizer
 
 import pytorch_lightning as pl
+from pytorch_lightning.strategies import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import WandbLogger
 
@@ -33,10 +34,11 @@ def main(cfg: DictConfig):
     checkpoint_cb = ModelCheckpoint(
         dirpath=cfg.ckpt_dir,
         monitor='val_mrr_10',
-        filename='dpr-{epoch:02d}-{val_mrr_10:.4f}',
+        filename='dpr-{step:06d}-{val_mrr_10:.4f}',
         save_top_k=3,
         mode='max',
-        save_last=True
+        save_last=True,
+        every_n_train_steps=cfg.train.val_check_interval
     )
     lr_monitor = LearningRateMonitor(logging_interval='step')
     callbacks = [checkpoint_cb, lr_monitor]
@@ -53,16 +55,21 @@ def main(cfg: DictConfig):
     trainer = pl.Trainer(
         accelerator="gpu",
         devices=torch.cuda.device_count(),
-        max_epochs=1,
+        max_epochs=-1,
+        max_steps=cfg.train.max_steps,
         precision="16-mixed",
         logger=wandb_logger,
         callbacks=callbacks,
+        val_check_interval=cfg.train.val_check_interval,
+        check_val_every_n_epoch=None,
         accumulate_grad_batches=cfg.train.gradient_accumulation_steps,
-        # strategy="ddp_find_unused_parameters_true"
-        strategy="auto"
+        strategy=DDPStrategy(find_unused_parameters=False, static_graph=True),
+        gradient_clip_val=1.0,
+        gradient_clip_algorithm="norm"
+        # strategy="auto"
     )
-    # trainer.fit(splade_module, splade_datamodule)
-    trainer.validate(splade_module, splade_datamodule)
+    trainer.fit(splade_module, splade_datamodule)
+    # trainer.validate(splade_module, splade_datamodule)
 
 if __name__ == "__main__":
     main()

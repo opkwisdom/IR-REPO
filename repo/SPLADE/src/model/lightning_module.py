@@ -60,7 +60,7 @@ class SpladeLightningModule(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        CHUNK_SIZE = 256
+        CHUNK_SIZE = 32
         total_scores = []
         
         q_sparse_emb = self.model.query_emb(**batch["queries"])
@@ -127,6 +127,6 @@ class SpladeLightningModule(pl.LightningModule):
             "lr_scheduler": {
                 "scheduler": scheduler,
                 "interval": "step",
-                "frequency": 1
+                "frequency": self.cfg.gradient_accumulation_steps,
             }
         }

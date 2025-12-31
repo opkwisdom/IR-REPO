@@ -10,9 +10,11 @@ seed: 42
 device: cuda
 num_device: 4
 
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/splade/msmarco/tuned
+ckpt_dir: /home/ir_repo/work/hdd/checkpoint/splade/msmarco/base
 exp_model: SPLADE
 exp_name: splade_msmarco_train
+
+gradient_checkpointing: True
 
 
 # hydra 설정

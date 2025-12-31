@@ -37,7 +37,8 @@ pip install pytorch-lightning==2.5.6
 
 ## MS Marco Passage Retrieval (Ours)
 
-| Model | MRR@10 | nDCG@10 | Recall@10 |
-| :--- | :--- | :--- | :--- |
-| BM25 | 0.1874 | 0.2340 | 0.3916 |
-| DPR | 0.2677 | 0.3202 | 0.4975 |
+| Model | MRR@10 | nDCG@10 | Recall@10 | Recall@1000 |
+| :--- | :--- | :--- | :--- | :--- |
+| BM25 | 0.1874 | 0.2340 | 0.3916 | 0.8573 |
+| DPR (Bert) | 0.2677 | 0.3202 | 0.4975 | 0.9313 |
+| SPLADE-max | - | - | - | - |

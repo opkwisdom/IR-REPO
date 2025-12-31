@@ -15,6 +15,9 @@ common:
   ### Dev path (used for naive evaluation)
   bm25_dev: /home/ir_repo/work/hdd/data/dev/msmarco/bm25_topk_dev.json
 
+  ### Original triple tsv path
+  tsv_triple_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/triples.train.small.tsv
+
 ### Specific sections
 mining:
   name: ${data.common.name}
@@ -24,6 +27,12 @@ mining:
 
 train:
   name: ${data.common.name}
+
+  # if we use msmarco tsv
+  use_msmarco: False
+  # triple_path: ${data.common.tsv_triple_path}
+
+  # if we don't use msmarco tsv
   triple_path: /home/ir_repo/work/repo/DPR/src/hard_negatives/msmarco.jsonl
   queries_path: ${data.common.queries_train}
   collection_path: ${data.common.collection}

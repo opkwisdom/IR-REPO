@@ -1,2 +1,2 @@
-model_name_or_path: bert-base-uncased
-use_gradient_checkpointing: false
+model_name_or_path: distilbert-base-uncased
+use_gradient_checkpointing: True

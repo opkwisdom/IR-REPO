@@ -1,4 +1,4 @@
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader, IterableDataset, get_worker_info
 import torch
 import pytorch_lightning as pl
 from omegaconf import DictConfig
@@ -6,6 +6,8 @@ from transformers import AutoTokenizer
 from typing import Dict
 import logging
 import random
+import sys
+import csv
 
 from typing import List
 from utils import (
@@ -46,6 +48,43 @@ class DPRDataset(Dataset):
             "neg_title": neg_doc["title"],
             "neg_contents": neg_doc["contents"],
         }
+    
+
+class DPRMSMarcoDataset(IterableDataset):
+    def __init__(self, triple_path: str, rank: int = 0, world_size: int = 1):
+        super().__init__()
+        self.triple_path = triple_path
+        self.rank = rank
+        self.world_size = world_size
+
+        csv.field_size_limit(sys.maxsize)
+
+    def __iter__(self):
+        worker_info = get_worker_info()
+
+        if worker_info is None:
+            num_workers_per_gpu = 1
+            worker_id = 0
+        else:
+            num_workers_per_gpu = worker_info.num_workers
+            worker_id = worker_info.id
+        
+        global_worker_id = self.rank * num_workers_per_gpu + worker_id
+        total_workers = self.world_size * num_workers_per_gpu
+
+        with open(self.triple_path, "r", encoding="utf-8") as f:
+            for i, line in enumerate(f):
+                # Read only lines assigned to this worker
+                if i % total_workers != global_worker_id:
+                    continue
+                query_text, pos_text, neg_text = line.strip().split('\t')
+                yield {
+                    "query_text": query_text,
+                    "pos_title": "",
+                    "pos_contents": pos_text,
+                    "neg_title": "",
+                    "neg_contents": neg_text,
+                }
 
 
 class DPRDevDataset(Dataset):
@@ -97,12 +136,26 @@ class DPRDataModule(pl.LightningDataModule):
             logger.info("Collection loaded.")
 
         if stage == "fit" or stage is None:
-            self.train_dataset = DPRDataset(
-                triple_path=self.data_cfg.triple_path,
-                queries_path=self.data_cfg.queries_path,
-                collection=self.collection,
-                n_negative=self.train_cfg.n_negative,
-            )
+            if self.data_cfg.use_msmarco:
+                if not self.data_cfg.triple_path.endswith(".tsv"):
+                    raise ValueError("For MSMarco dataset, triple_path should be a .tsv file.")
+                self.train_dataset = DPRMSMarcoDataset(
+                    triple_path=self.data_cfg.triple_path,
+                    rank=self.trainer.global_rank,
+                    world_size=self.trainer.world_size
+                )
+                logger.info("Using MSMarco Iterable Dataset for training.")
+            else:
+                if not self.data_cfg.triple_path.endswith(".jsonl"):
+                    raise ValueError("For standard DPR dataset, triple_path should be a .jsonl file.")
+                self.train_dataset = DPRDataset(
+                    triple_path=self.data_cfg.triple_path,
+                    queries_path=self.data_cfg.queries_path,
+                    collection=self.collection,
+                    n_negative=self.train_cfg.n_negative,
+                )
+                logger.info("Using standard Map-style Dataset for training.")
+
             self.val_dataset = DPRDevDataset(
                 dev_queries_path=self.data_cfg.dev_queries_path,
                 dev_qrels_path=self.data_cfg.dev_qrels_path,
@@ -176,6 +229,7 @@ class DPRDataModule(pl.LightningDataModule):
             num_workers=self.data_cfg.num_workers,
             pin_memory=True,
             collate_fn=self.train_collate_fn,
+            drop_last=True,
         )
     
     def val_dataloader(self):
@@ -186,4 +240,5 @@ class DPRDataModule(pl.LightningDataModule):
             num_workers=self.data_cfg.num_workers,
             pin_memory=True,
             collate_fn=self.val_collate_fn,
+            drop_last=False,
         )

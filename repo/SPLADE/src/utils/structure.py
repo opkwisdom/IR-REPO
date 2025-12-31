@@ -33,3 +33,10 @@ class TripleCandidates:
     qid: str
     pos_id: str
     neg_ids: List[str]
+    
+# Index data structure
+@dataclass
+class SparseVector:
+    doc_ids: List[str]
+    token_ids: List[List[int]]
+    scores: List[List[float]]

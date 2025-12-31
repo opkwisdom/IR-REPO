@@ -23,8 +23,12 @@ class Encoder(nn.Module):
 class DPREncoder(BiEncoder):
     def __init__(self, cfg):
         super().__init__(cfg)
-        self.query_model = Encoder(cfg.model_name_or_path)
-        self.context_model = Encoder(cfg.model_name_or_path)
+        if cfg.share_encoder:
+            self.query_model = Encoder(cfg.model_name_or_path)
+            self.context_model = self.query_model
+        else:
+            self.query_model = Encoder(cfg.model_name_or_path)
+            self.context_model = Encoder(cfg.model_name_or_path)
 
     def query_emb(self, input_ids, attention_mask):
         return self.query_model(input_ids, attention_mask)

@@ -5,10 +5,9 @@ gradient_accumulation_steps: 1
 learning_rate: 2e-5
 weight_decay: 0.01
 max_epochs:
-n_negative: 50
 
-max_steps: 150000
-val_check_interval: 5000
+max_steps: 1000 # Debug setting (original: 150000)
+val_check_interval: 1000  # In general, 5000
 
 # Regularizer settings
 FLOPS:
@@ -16,4 +15,4 @@ FLOPS:
   lambda_p: 1e-4
   T: 50000
 
-warmup_steps: 6000
+warmup_steps: 100

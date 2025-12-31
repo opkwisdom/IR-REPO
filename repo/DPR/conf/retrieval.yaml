@@ -12,10 +12,10 @@ seed: 42
 device: cuda
 
 ### indexing.yaml and retrieval.yaml should have same ckpt_dir & ckpt_file
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/tuned
-ckpt_file: dpr-epoch=01-val_loss=0.2806.ckpt
+ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/epoch_5
+ckpt_file:
 
-index_dir: /home/ir_repo/work/hdd/index/dpr/msmarco/tuned
+index_dir: /home/ir_repo/work/hdd/index/dpr/msmarco/epoch_5
 output_dir: /home/ir_repo/work/repo/DPR/results/msmarco
 
 

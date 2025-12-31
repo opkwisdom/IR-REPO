@@ -7,7 +7,7 @@ import glob
 import numpy as np
 import torch.multiprocessing as mp
 from omegaconf import DictConfig, OmegaConf
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 from torch.nn.parallel import DistributedDataParallel as DDP
 from transformers import AutoTokenizer
 from tqdm import tqdm
@@ -18,11 +18,11 @@ from utils import (
     set_seed,
     load_collection,
     get_best_checkpoint,
-    setup, cleanup
+    setup, cleanup,
+    SparseVector
 )
 
 # {docid: {token_id: weight, ...}}
-type SparseVector = Dict[str, Dict[str, float]]
 
 logger = logging.getLogger(__file__)
 
@@ -39,7 +39,10 @@ def gen_ctx_sparse_vectors(
     device = torch.device(f"cuda:{rank}")
     encoder.to(device)
     encoder.eval()
-    sparse_vectors: SparseVector = {}
+    
+    all_doc_ids = []
+    all_token_ids = []
+    all_scores = []
 
     all_pids = list(shard_collection.keys())
     all_texts = [shard_collection[pid] for pid in all_pids]
@@ -60,15 +63,41 @@ def gen_ctx_sparse_vectors(
             text_pair=batch_texts,
             padding=True,
             truncation=True,
-            max_length=cfg.model.max_passage_length,
+            max_length=cfg.dataset.max_passage_length,
             return_tensors="pt"
         ).to(device)
-        import pdb; pdb.set_trace()
         with torch.no_grad():
-            batch_vectors = encoder(**inputs)
+            sparse_embeddings = encoder(**inputs)
+        
         # TODO: Convert to sparse representation and store
+        sparse_batch = sparse_embeddings.to_sparse_csr()
 
-    return sparse_vectors
+        crow_indices = sparse_batch.crow_indices().cpu().numpy()
+        col_indices = sparse_batch.col_indices().cpu().numpy()
+        sparse_values = sparse_batch.values().cpu().numpy()
+
+        cur_batch_size = sparse_embeddings.shape[0]
+        for i in range(cur_batch_size):
+            start_idx = crow_indices[i]
+            row_n_elem = crow_indices[i+1] - crow_indices[i]
+
+            row_pid = batch_ids[i]
+            if row_n_elem == 0:
+                logger.warning(f"Passage {row_pid} doesn't match any other terms.")
+                continue
+            
+            row_token_ids = col_indices[start_idx : start_idx+row_n_elem]
+            row_weights = sparse_values[start_idx : start_idx+row_n_elem]
+            
+            all_doc_ids.append(row_pid)
+            all_token_ids.append(row_token_ids.tolist())
+            all_scores.append(row_weights.tolist())
+
+    return SparseVector(
+        doc_ids=all_doc_ids,
+        token_ids=all_token_ids,
+        scores=all_scores
+    )
 
 def get_shards(collection: Dict[str, Dict[str, str]], num_shards: int) -> List[Dict[str, Dict[str, str]]]:
     all_pids = list(collection.keys())
@@ -98,7 +127,7 @@ def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, Dic
     shard_keys = list(shard.keys())
     n = len(shard_keys)
 
-    CHUNK_SIZE = 100000
+    CHUNK_SIZE = 10000
     iterator = tqdm(range(0, n, CHUNK_SIZE), desc=f"Processing chunk on GPU-{rank}")
     for i, start_idx in enumerate(iterator):
         end_idx = min(n, start_idx + CHUNK_SIZE)
@@ -118,7 +147,7 @@ def main(cfg: DictConfig):
 
     world_size = torch.cuda.device_count()
     # Load collection
-    collection = load_collection(cfg.data.collection_path)
+    collection = load_collection(cfg.dataset.collection_path)
     shards = get_shards(collection, world_size)
 
     # Multi-Process DDP indexing
@@ -126,22 +155,24 @@ def main(cfg: DictConfig):
     # mp.spawn(ddp_worker, args=(world_size, shards, cfg), nprocs=world_size)
     ddp_worker(0, world_size, shards, cfg)  # For debugging without multi-gpu
     
-    # Gather all sparse vectors from shards
-    ctx_dict = {}
-    logger.info("Gathering context sparse vectors from all shards...")
+    # Gather all sparse vectors from shards & Build Sparse index
+    cfg_index = cfg.index
+    indexer = SparseIndexer(cfg_index)
+
+    logger.info("Indexing context sparse vectors from all shards...")
+    total_count = 0
     for i in range(world_size):
         tmp_path_list = glob.glob(os.path.join(cfg.output_dir, f"shard_{i}_*.pkl"))
         tmp_path_list = sorted(tmp_path_list, key=lambda x: int(x.split('_')[-1].split('.')[0]))
         for tmp_path in tmp_path_list:
             with open(tmp_path, 'rb') as f:
                 shard_sparse_vectors = pickle.load(f)
-                ctx_dict.update(shard_sparse_vectors)
+                indexer.index_data(shard_sparse_vectors)
+                total_count += len(shard_sparse_vectors)
             os.remove(tmp_path)
         logger.info(f"GPU-{i} shards loaded.")
-    logger.info(f"Total context vectors: {len(ctx_dict)}")
-
-    # Build Sparse index
-    cfg_index = cfg.index
-    indexer = SparseIndexer(cfg_index)
-    indexer.index_data(ctx_dict, )
+    logger.info(f"Total context vectors: {total_count}")
     indexer.save(os.path.join(cfg.output_dir, f"{cfg.dataset.name}_sparse"))
+
+if __name__ == "__main__":
+    main()

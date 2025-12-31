@@ -1,10 +1,12 @@
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader, IterableDataset, get_worker_info
 import torch
 import pytorch_lightning as pl
 from omegaconf import DictConfig
 from transformers import AutoTokenizer
 import logging
 import random
+import sys
+import csv
 
 from typing import List, Dict
 from utils import (
@@ -18,11 +20,12 @@ from utils import (
 logger = logging.getLogger(__name__)
 
 class SpladeDataset(Dataset):
-    def __init__(self, triple_path: str, queries_path: str, collection: Dict[str, Dict[str, str]]):
+    def __init__(self, triple_path: str, queries_path: str, collection: Dict[str, Dict[str, str]], n_negative: int = 50):
         super().__init__()
         self.triple_candidates = load_triple_candidates(triple_path)
         self.queries = load_queries(queries_path)
         self.collection = collection
+        self.n_negative = n_negative
 
     def __len__(self):
         return len(self.triple_candidates)
@@ -33,7 +36,8 @@ class SpladeDataset(Dataset):
         query_text = self.queries[triple.qid]
         pos_doc = self.collection[triple.pos_id]
         
-        neg_id = random.choice(triple.neg_ids)
+        topk_neg_ids = triple.neg_ids[:self.n_negative]
+        neg_id = random.choice(topk_neg_ids)
         neg_doc = self.collection[neg_id]
 
         return {
@@ -43,6 +47,42 @@ class SpladeDataset(Dataset):
             "neg_title": neg_doc["title"],
             "neg_contents": neg_doc["contents"],
         }
+    
+class SpladeMSMarcoDataset(IterableDataset):
+    def __init__(self, triple_path: str, rank: int = 0, world_size: int = 1):
+        super().__init__()
+        self.triple_path = triple_path
+        self.rank = rank
+        self.world_size = world_size
+
+        csv.field_size_limit(sys.maxsize)
+
+    def __iter__(self):
+        worker_info = get_worker_info()
+
+        if worker_info is None:
+            num_workers_per_gpu = 1
+            worker_id = 0
+        else:
+            num_workers_per_gpu = worker_info.num_workers
+            worker_id = worker_info.id
+        
+        global_worker_id = self.rank * num_workers_per_gpu + worker_id
+        total_workers = self.world_size * num_workers_per_gpu
+
+        with open(self.triple_path, "r", encoding="utf-8") as f:
+            for i, line in enumerate(f):
+                # Read only lines assigned to this worker
+                if i % total_workers != global_worker_id:
+                    continue
+                query_text, pos_text, neg_text = line.strip().split('\t')
+                yield {
+                    "query_text": query_text,
+                    "pos_title": "",
+                    "pos_contents": pos_text,
+                    "neg_title": "",
+                    "neg_contents": neg_text,
+                }
     
 class SpladeDevDataset(Dataset):
     def __init__(self, dev_queries_path: str, dev_qrels_path: str, dev_path: str, collection: Dict[str, Dict[str, str]]):
@@ -93,11 +133,23 @@ class SpladeDataModule(pl.LightningDataModule):
             logger.info("Collection loaded.")
 
         if stage == "fit" or stage is None:
-            self.train_dataset = SpladeDataset(
-                triple_path=self.data_cfg.triple_path,
-                queries_path=self.data_cfg.queries_path,
-                collection=self.collection,
-            )
+            if self.data_cfg.use_msmarco:
+                if not self.data_cfg.triple_path.endswith(".tsv"):
+                    raise ValueError("For MSMarco dataset, triple_path should be a .tsv file.")
+                self.train_dataset = SpladeMSMarcoDataset(
+                    triple_path=self.data_cfg.triple_path,
+                    rank=self.trainer.global_rank,
+                    world_size=self.trainer.world_size
+                )
+            else:
+                if not self.data_cfg.triple_path.endswith(".jsonl"):
+                    raise ValueError("For standard SPLADE dataset, triple_path should be a .jsonl file.")
+                self.train_dataset = SpladeDataset(
+                    triple_path=self.data_cfg.triple_path,
+                    queries_path=self.data_cfg.queries_path,
+                    collection=self.collection,
+                    n_negative=self.train_cfg.n_negative
+                )
             self.val_dataset = SpladeDevDataset(
                 dev_queries_path=self.data_cfg.dev_queries_path,
                 dev_qrels_path=self.data_cfg.dev_qrels_path,
@@ -171,13 +223,15 @@ class SpladeDataModule(pl.LightningDataModule):
         }
 
     def train_dataloader(self):
+        do_shuffle = False if isinstance(self.train_dataset, IterableDataset) else True
         return DataLoader(
             self.train_dataset,
             batch_size=self.train_cfg.per_device_batch_size,
-            shuffle=True,
+            shuffle=do_shuffle,
             num_workers=self.data_cfg.num_workers,
             pin_memory=True,
             collate_fn=self.train_collate_fn,
+            drop_last=True
         )
     
     def val_dataloader(self):
@@ -187,5 +241,6 @@ class SpladeDataModule(pl.LightningDataModule):
             shuffle=False,
             num_workers=self.data_cfg.num_workers,
             pin_memory=True,
-            collate_fn=self.val_collate_fn,  # Use directly
+            collate_fn=self.val_collate_fn,
+            drop_last=False
         )

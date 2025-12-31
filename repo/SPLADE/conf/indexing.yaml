@@ -1,20 +1,19 @@
 defaults:
   - _self_
-  - data: msmarco
+  - data: debug
   - model: base
-  - index: faiss
+  - index: sparse
   - search: eval
 
 dataset: ${data.index}  # Use specific section
-index_key: flat
 
 seed: 42
 device: cuda
 
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr
-ckpt_file: dpr-epoch=01-val_loss=0.2735.ckpt
+ckpt_dir: /home/ir_repo/work/hdd/checkpoint/splade/msmarco/debug
+ckpt_file:
 
-output_dir: /home/ir_repo/work/hdd/index/dpr
+output_dir: /home/ir_repo/work/hdd/index/splade/msmarco/debug
 
 # hydra 설정
 hydra:

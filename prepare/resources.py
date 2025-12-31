@@ -3,7 +3,9 @@ MSMARCO_MAP = {
         "passages.tar.gz": "https://msmarco.z22.web.core.windows.net/msmarcoranking/collection.tar.gz",
         "queries.tar.gz": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
         "train_qrels.tsv": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.train.tsv",
-        "dev_qrels.tsv": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.tsv"
+        "dev_qrels.tsv": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.tsv",
+
+        "triples_train.tar.gz": "https://msmarco.z22.web.core.windows.net/msmarcoranking/triples.train.small.tar.gz"    # Original MSMARCO triple
     }
 }
 
