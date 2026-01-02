@@ -5,7 +5,8 @@ MSMARCO_MAP = {
         "train_qrels.tsv": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.train.tsv",
         "dev_qrels.tsv": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.tsv",
 
-        "triples_train.tar.gz": "https://msmarco.z22.web.core.windows.net/msmarcoranking/triples.train.small.tar.gz"    # Original MSMARCO triple
+        "triples_train.tar.gz": "https://msmarco.z22.web.core.windows.net/msmarcoranking/triples.train.small.tar.gz",   # Official MSMARCO triple
+        "top1000.dev.tar.gz": "https://msmarco.z22.web.core.windows.net/msmarcoranking/top1000.dev.tar.gz"              # Official MSMARCO dev top-1000
     }
 }
 

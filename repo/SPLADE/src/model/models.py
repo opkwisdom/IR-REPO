@@ -35,8 +35,12 @@ class Encoder(nn.Module):
 class SpladeEncoder(BiEncoder):
     def __init__(self, cfg):
         super().__init__(cfg)
-        self.query_model = Encoder(cfg.model_name_or_path, cfg.use_gradient_checkpointing)
-        self.context_model = Encoder(cfg.model_name_or_path, cfg.use_gradient_checkpointing)
+        if cfg.share_encoder:
+            self.query_model = Encoder(cfg.model_name_or_path, cfg.use_gradient_checkpointing)
+            self.context_model = self.query_model
+        else:
+            self.query_model = Encoder(cfg.model_name_or_path, cfg.use_gradient_checkpointing)
+            self.context_model = Encoder(cfg.model_name_or_path, cfg.use_gradient_checkpointing)
 
     def query_emb(self, input_ids, attention_mask):
         return self.query_model(input_ids, attention_mask)

@@ -23,13 +23,22 @@ class SparseIndexer:
         self.total_docs = 0
         self.index_matrix = None
         self.vocab_size = getattr(cfg, "vocab_size", 30522)
+
+        self.avg_n_terms = 0
         
-    def index_data(self, sparse_vectors: SparseVector):
+    def index_data(self, sparse_vectors: SparseVector, top_k: int = 200):
         """
-        Index the provided sparse vectors.
+        Index the provided sparse vectors with pruning (Top-K).
         """
         self.index_id_to_db_id.extend(sparse_vectors.doc_ids)
         for tokens, weights in zip(sparse_vectors.token_ids, sparse_vectors.scores):
+            # Do pruning
+            if len(tokens) > top_k:
+                paired = sorted(zip(weights, tokens), key=lambda x: x[0], reverse=True)
+                paired = paired[:top_k]
+            paired.sort(key=lambda x: x[1])
+            weights, tokens = zip(*paired)
+                
             self.col_indices.extend(tokens)
             self.values.extend(weights)
             
@@ -37,19 +46,29 @@ class SparseIndexer:
             self.crow_indices.append(last_ptr + len(tokens))
 
             self.total_docs += 1
+            self.avg_n_terms += len(tokens)
     
     def search(self, query_vectors: SparseVector, query_indices: List[str], top_k: int, batch_size: int = 128) -> Dict[str, List[str]]:
         # TODO: Implement search logic
         
+        flat_token_ids = [tid for seq in query_vectors.token_ids for tid in seq]
+        flat_scores = [score for seq in query_vectors.scores for score in seq]
+        
+        lengths = [len(seq) for seq in query_vectors.token_ids]
+        crow_indices = [0]
+        cur = 0
+        for l in lengths:
+            cur += l
+            crow_indices.append(cur)
         # Convert SparseVector to csr format
-        t_crow = torch.tensor(query_vectors.crow_indices, dtype=torch.int64)
-        t_col = torch.tensor(query_vectors.col_indices, dtype=torch.int64)
-        t_values = torch.tensor(query_vectors.values, dtype=torch.float32)
+        t_crow = torch.tensor(crow_indices, dtype=torch.int64)
+        t_col = torch.tensor(flat_token_ids, dtype=torch.int64)
+        t_values = torch.tensor(flat_scores, dtype=torch.float32)
         query_sparse_matrix = torch.sparse_csr_tensor(
             t_crow, t_col, t_values,
             size=(len(t_crow - 1), self.vocab_size)
         )
-        query_dense_matrix = query_sparse_matrix.to_dense().T   # (D, N)
+        query_dense_matrix = query_sparse_matrix.to_dense().T   # (V, N)
 
         n = len(t_crow - 1)
         iterator = tqdm(range(0, n, batch_size), desc="Searching queries")
@@ -58,12 +77,12 @@ class SparseIndexer:
         # Search using sparse matrix multiplication
         for start_idx in iterator:
             end_idx = min(start_idx + batch_size, n)
-            batch_queries = query_dense_matrix[:, start_idx:end_idx]    # (D, B)
+            batch_queries = query_dense_matrix[:, start_idx:end_idx]    # (V, B)
 
             batch_score = torch.sparse.mm(self.index_matrix, batch_queries)   # (I, B)
             _, indices = batch_score.topk(dim=0, k=top_k)
             topk_indices = indices.T    # (B, Top-K)
-            total_indices.append(topk_indices)
+            total_indices.append(topk_indices.cpu())
         total_indices = torch.vstack(total_indices) # (N, Top-K)
         
         # mapping internal integer ids to db ids
@@ -88,6 +107,9 @@ class SparseIndexer:
             t_crow, t_col, t_values,
             size=(self.total_docs, self.vocab_size)
         )
+        if self.avg_n_terms > 0:
+            self.avg_n_terms /= self.total_docs
+        logger.info(f"Avg. token count: {self.avg_n_terms:.4f} tokens")
 
         torch.save(sparse_matrix, index_file)
         with open(meta_file, 'wb') as f:

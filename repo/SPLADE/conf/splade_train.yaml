@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - data: msmarco       # default dataset
-  - model: base
+  - model: distilbert
   - train: base
 
 dataset: ${data.train}  # Use specific section

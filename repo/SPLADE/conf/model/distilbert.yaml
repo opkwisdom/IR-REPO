@@ -1,0 +1,4 @@
+model_type: distilbert
+model_name_or_path: distilbert-base-uncased
+use_gradient_checkpointing: True
+share_encoder: True

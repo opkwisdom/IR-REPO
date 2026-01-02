@@ -4,6 +4,7 @@ from tqdm import tqdm
 import glob
 import sys
 from dataclasses import dataclass, asdict
+from collections import defaultdict
 
 BASE_INPUT_DIR = "/home/ir_repo/work/hdd/data/raw"
 BASE_OUTPUT_DIR = "/home/ir_repo/work/hdd/data/preprocessed"
@@ -134,6 +135,17 @@ def preprocess_ir_datasets() -> None:
                         f_out.write(json.dumps(asdict(qrel), ensure_ascii=False) + "\n")
         
     print("IR Datasets preprocessing completed.")
+
+def preprocess_msmarco_dev() -> None:
+    dev_data = defaultdict(list)
+    dev_path = "/home/ir_repo/work/hdd/data/dev/msmarco/top1000.dev"
+    with open(dev_path, 'r') as f:
+        for line in tqdm(f):
+            qid, pid, query, passage = line.strip().split('\t')
+            dev_data[qid].append(pid)
+    output_path = "/home/ir_repo/work/hdd/data/dev/msmarco/bm25_topk_dev.json"
+    with open(output_path, 'w') as f:
+        json.dump(dev_data, f, ensure_ascii=False, indent=4)
 ### ========================================================================================== ###
 
 
@@ -145,5 +157,7 @@ if __name__ == "__main__":
         preprocess_msmarco()
     elif exec_type == "ir":
         preprocess_ir_datasets()
+    elif exec_type == "msmarco-dev":
+        preprocess_msmarco_dev()
     else:
         raise ValueError(f"Unknown exec_type: {exec_type}")

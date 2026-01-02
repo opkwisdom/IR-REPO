@@ -5,6 +5,6 @@ gradient_accumulation_steps: 1
 learning_rate: 2e-5
 weight_decay: 0.01
 max_epochs: 10
-n_negative: 50
+n_negative: 100
 
 warmup_steps: 1000

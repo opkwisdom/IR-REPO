@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - data: msmarco
-  - model: base
+  - model: roberta
   - index: faiss
   - search: eval
 
@@ -12,10 +12,10 @@ seed: 42
 device: cuda
 
 ### indexing.yaml and retrieval.yaml should have same ckpt_dir & ckpt_file
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/epoch_5
+ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/roberta_epoch_10
 ckpt_file:
 
-index_dir: /home/ir_repo/work/hdd/index/dpr/msmarco/epoch_5
+index_dir: /home/ir_repo/work/hdd/index/dpr/msmarco/roberta_epoch_10
 output_dir: /home/ir_repo/work/repo/DPR/results/msmarco
 
 

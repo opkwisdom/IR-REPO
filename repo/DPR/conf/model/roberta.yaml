@@ -1,0 +1,6 @@
+model_type: roberta
+model_name_or_path: roberta-base
+use_gradient_checkpointing: false
+dropout_rate: 0.1
+share_encoder: False
+pooling_type: mean

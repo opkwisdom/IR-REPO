@@ -48,7 +48,7 @@ def main(cfg: DictConfig):
         project="Dense_Retrieval_Reproduce",
         group=cfg.exp_model,
         name=cfg.exp_name,
-        tags=[cfg.exp_model, cfg.dataset.name]
+        tags=[cfg.exp_model, cfg.dataset.name, cfg.model.model_type]
     )
 
     # Setup trainer

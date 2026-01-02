@@ -1,4 +1,6 @@
+model_type: bert
 model_name_or_path: bert-base-uncased
 use_gradient_checkpointing: false
 dropout_rate: 0.1
 share_encoder: False
+pooling_type: mean

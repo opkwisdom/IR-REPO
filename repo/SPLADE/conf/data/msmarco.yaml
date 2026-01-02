@@ -29,11 +29,11 @@ train:
   name: ${data.common.name}
 
   # if we use msmarco tsv
-  use_msmarco: False
-  # triple_path: ${data.common.tsv_triple_path}
+  use_msmarco: True
+  triple_path: ${data.common.tsv_triple_path}
 
   # if we don't use msmarco tsv
-  triple_path: /home/ir_repo/work/repo/SPLADE/src/hard_negatives/msmarco.jsonl
+  # triple_path: /home/ir_repo/work/repo/SPLADE/src/hard_negatives/msmarco.jsonl
   queries_path: ${data.common.queries_train}
   collection_path: ${data.common.collection}
 

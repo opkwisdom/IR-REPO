@@ -20,7 +20,7 @@ from utils import (
 
 logger = logging.getLogger(__name__)
 
-class DPRDataset(Dataset):
+class ColBERTDataset(Dataset):
     def __init__(self, triple_path: str, queries_path: str, collection: Dict[str, Dict[str, str]], n_negative: int = 50):
         super().__init__()
         self.triple_candidates = load_triple_candidates(triple_path)
@@ -50,7 +50,7 @@ class DPRDataset(Dataset):
         }
     
 
-class DPRMSMarcoDataset(IterableDataset):
+class ColBERTMSMarcoDataset(IterableDataset):
     def __init__(self, triple_path: str, rank: int = 0, world_size: int = 1):
         super().__init__()
         self.triple_path = triple_path
@@ -87,7 +87,7 @@ class DPRMSMarcoDataset(IterableDataset):
                 }
 
 
-class DPRDevDataset(Dataset):
+class ColBERTDevDataset(Dataset):
     def __init__(self, dev_queries_path: str, dev_qrels_path: str, dev_path: str, collection: Dict[str, Dict[str, str]]):
         super().__init__()
         self.dev_queries = load_queries(dev_queries_path)
@@ -114,20 +114,128 @@ class DPRDevDataset(Dataset):
             "passage_titles": [self.collection[idx]["title"] for idx in passage_ids],
             "passage_contents": [self.collection[idx]["contents"] for idx in passage_ids],
         }
+        
 
-
-class DPRDataModule(pl.LightningDataModule):
+### Lightning Datamodule
+class ColBERTDataModule(pl.LightningDataModule):
     def __init__(self, cfg: DictConfig, tokenizer: AutoTokenizer):
         super().__init__()
         self.save_hyperparameters(cfg)
         self.data_cfg = cfg.dataset
         self.train_cfg = cfg.train
         self.seed = cfg.seed
+        
+        # Add special tokens ([Q], [D])
+        special_tokens = ["[Q]", "[D]"]
+        tokenizer.add_special_tokens({
+            "additional_special_tokens": special_tokens
+        })
+        self.q_marker_id = tokenizer.convert_tokens_to_ids("[Q]")
+        self.d_marker_id = tokenizer.convert_tokens_to_ids("[D]")
         self.tokenizer = tokenizer
-
+        
         self.collection = None
         self.train_dataset = None
         self.val_dataset = None
+
+    def query_tokenize(self, query_texts: List[str]):
+        """
+        Tokenize query texts for ColBERT.
+        All query inputs are used. (Not padded, just masked)
+        """
+        q_ids = self.tokenizer(
+            query_texts,
+            padding=False,
+            truncation=True,
+            max_length=self.data_cfg.max_query_length,
+            add_special_tokens=False,
+            return_token_type_ids=False
+        )["input_ids"]
+        
+        # Refer ColBERT github implementation
+        prefix, postfix = [self.tokenizer.cls_token_id, self.q_marker_id], [self.tokenizer.sep_token_id]
+        padded_q_ids = [
+            prefix + q + [self.tokenizer.mask_token_id] * (self.data_cfg.max_query_length - (len(q) + 3)) + postfix
+            for q in q_ids
+        ]
+        input_ids = torch.tensor(padded_q_ids, dtype=torch.long)
+        attention_mask = torch.ones_like(input_ids)
+        
+        return {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask
+        }
+        
+    def doc_tokenize(self, doc_texts: List[str]):
+        """
+        Tokenize document texts for ColBERT.
+        Passages are padded to max_passage_length.
+        """
+        d_ids = self.tokenizer(
+            doc_texts,
+            padding=False,
+            truncation=True,
+            max_length=self.data_cfg.max_passage_length,
+            add_special_tokens=False,
+            return_token_type_ids=False,
+        )["input_ids"]
+        
+        # Refer ColBERT github implementation
+        prefix, postfix = [self.tokenizer.cls_token_id, self.d_marker_id], [self.tokenizer.sep_token_id]
+        padded_d_ids = []
+        attention_mask = []
+        for d in d_ids:
+            contents = prefix + d + postfix
+            pad_len = self.data_cfg.max_passage_length - (len(d) + 3)
+
+            full_ids = contents + [self.tokenizer.pad_token_id] * pad_len
+            mask = [1] * len(contents) + [0] * pad_len
+            padded_d_ids.append(full_ids)
+            attention_mask.append(mask)
+
+        input_ids = torch.tensor(padded_d_ids, dtype=torch.long)
+        attention_mask = torch.tensor(attention_mask, dtype=torch.long)
+
+        return {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask
+        }
+
+    def train_collate_fn(self, batch):
+        # Manual tokenize
+        query_texts = [item["query_text"] for item in batch]
+        
+        pos_titles = [item["pos_title"] for item in batch]
+        pos_contents = [item["pos_contents"] for item in batch]
+        pos_docs = [t + " " + c for t, c in zip(pos_titles, pos_contents)]
+        
+        neg_titles = [item["neg_title"] for item in batch]
+        neg_contents = [item["neg_contents"] for item in batch]
+        neg_docs = [t + " " + c for t, c in zip(neg_titles, neg_contents)]
+        all_docs = pos_docs + neg_docs
+
+        # custom tokenization
+        q_inputs = self.query_tokenize(query_texts)
+        p_inputs = self.doc_tokenize(all_docs)
+        
+        return {
+            "queries": q_inputs,
+            "passages": p_inputs
+        }
+        
+    def val_collate_fn(self, batch):
+        batch = batch[0]    # unpack
+        all_docs = [t + " " + c for t, c in zip(batch["passage_titles"], batch["passage_contents"])]
+        
+        q_inputs = self.query_tokenize([batch["query_text"]])
+        p_inputs = self.doc_tokenize(all_docs)
+        
+        return {
+            "query_id": batch["query_id"],
+            "passage_ids": batch["passage_ids"],
+            "queries": q_inputs,
+            "passages": p_inputs
+        }
 
     def setup(self, stage=None):
         if self.collection is None:
@@ -139,7 +247,7 @@ class DPRDataModule(pl.LightningDataModule):
             if self.data_cfg.use_msmarco:
                 if not self.data_cfg.triple_path.endswith(".tsv"):
                     raise ValueError("For MSMarco dataset, triple_path should be a .tsv file.")
-                self.train_dataset = DPRMSMarcoDataset(
+                self.train_dataset = ColBERTMSMarcoDataset(
                     triple_path=self.data_cfg.triple_path,
                     rank=self.trainer.global_rank,
                     world_size=self.trainer.world_size
@@ -148,7 +256,7 @@ class DPRDataModule(pl.LightningDataModule):
             else:
                 if not self.data_cfg.triple_path.endswith(".jsonl"):
                     raise ValueError("For standard DPR dataset, triple_path should be a .jsonl file.")
-                self.train_dataset = DPRDataset(
+                self.train_dataset = ColBERTDataset(
                     triple_path=self.data_cfg.triple_path,
                     queries_path=self.data_cfg.queries_path,
                     collection=self.collection,
@@ -156,71 +264,13 @@ class DPRDataModule(pl.LightningDataModule):
                 )
                 logger.info("Using standard Map-style Dataset for training.")
 
-            self.val_dataset = DPRDevDataset(
+            self.val_dataset = ColBERTDevDataset(
                 dev_queries_path=self.data_cfg.dev_queries_path,
                 dev_qrels_path=self.data_cfg.dev_qrels_path,
                 dev_path=self.data_cfg.bm25_dev_path,
                 collection=self.collection,
             )
-
-    def train_collate_fn(self, batch):
-        query_texts = [item["query_text"] for item in batch]
-
-        # Bert-style input: [CLS] title [SEP] contents [SEP]
-        pos_titles = [item["pos_title"] for item in batch]
-        pos_contents = [item["pos_contents"] for item in batch]
-        neg_titles = [item["neg_title"] for item in batch]
-        neg_contents = [item["neg_contents"] for item in batch]
-
-        q_inputs = self.tokenizer(
-            query_texts,
-            padding=True,
-            truncation=True,
-            max_length=self.data_cfg.max_query_length,
-            return_tensors="pt",
-            return_token_type_ids=False
-        )
-        p_inputs = self.tokenizer(
-            text=pos_titles + neg_titles,
-            text_pair=pos_contents + neg_contents,
-            padding=True,
-            truncation=True,
-            max_length=self.data_cfg.max_passage_length,
-            return_tensors="pt",
-            return_token_type_ids=False
-        )
-        return {
-            "queries": q_inputs,    # input_ids, attention_mask
-            "passages": p_inputs,
-        }
-
-    def val_collate_fn(self, batch):
-        batch = batch[0]    # unpack
-        
-        q_inputs = self.tokenizer(
-            [batch["query_text"]],
-            padding=True,
-            truncation=True,
-            max_length=self.data_cfg.max_query_length,
-            return_tensors="pt",
-            return_token_type_ids=False
-        )
-        p_inputs = self.tokenizer(
-            text=batch["passage_titles"],
-            text_pair=batch["passage_contents"],
-            padding=True,
-            truncation=True,
-            max_length=self.data_cfg.max_passage_length,
-            return_tensors="pt",
-            return_token_type_ids=False
-        )
-        return {
-            "query_id": batch["query_id"],
-            "passage_ids": batch["passage_ids"],
-            "queries": q_inputs,    # input_ids, attention_mask
-            "passages": p_inputs,
-        }
-
+            
     def train_dataloader(self):
         do_shuffle = self.data_cfg.use_msmarco == False
         return DataLoader(

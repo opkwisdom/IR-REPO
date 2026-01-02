@@ -49,7 +49,7 @@ def gen_ctx_sparse_vectors(
     total_len = len(all_pids)
     batch_size = cfg.search.batch_size
 
-    iterator = tqdm(range(0, total_len, batch_size), desc=f"GPU {rank}", position=rank)
+    iterator = tqdm(range(0, total_len, batch_size), desc=f"GPU {rank}", position=rank*2+1, leave=False)
     for start_idx in iterator:
         end_idx = min(total_len, start_idx + batch_size)
         batch_ids = all_pids[start_idx:end_idx]
@@ -115,7 +115,10 @@ def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, Dic
     setup(rank, world_size)
 
     # Load Lightning model & tokenizer
-    ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
+    if getattr(cfg, "ckpt_file", None) is None:
+        ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
+    else:
+        ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
     backbone = SpladeEncoder(cfg.model)
     lightning_module = SpladeLightningModule.load_from_checkpoint(ckpt_path, model=backbone)
     context_encoder = lightning_module.model.context_model.to(rank)
@@ -127,8 +130,8 @@ def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, Dic
     shard_keys = list(shard.keys())
     n = len(shard_keys)
 
-    CHUNK_SIZE = 10000
-    iterator = tqdm(range(0, n, CHUNK_SIZE), desc=f"Processing chunk on GPU-{rank}")
+    CHUNK_SIZE = 100000
+    iterator = tqdm(range(0, n, CHUNK_SIZE), desc=f"Processing chunk on GPU-{rank}", position=rank*2)
     for i, start_idx in enumerate(iterator):
         end_idx = min(n, start_idx + CHUNK_SIZE)
         chunk_pids = shard_keys[start_idx:end_idx]
@@ -152,8 +155,8 @@ def main(cfg: DictConfig):
 
     # Multi-Process DDP indexing
     os.makedirs(cfg.output_dir, exist_ok=True)
-    # mp.spawn(ddp_worker, args=(world_size, shards, cfg), nprocs=world_size)
-    ddp_worker(0, world_size, shards, cfg)  # For debugging without multi-gpu
+    mp.spawn(ddp_worker, args=(world_size, shards, cfg), nprocs=world_size)
+    # ddp_worker(0, world_size, shards, cfg)  # For debugging without multi-gpu
     
     # Gather all sparse vectors from shards & Build Sparse index
     cfg_index = cfg.index
@@ -168,7 +171,7 @@ def main(cfg: DictConfig):
             with open(tmp_path, 'rb') as f:
                 shard_sparse_vectors = pickle.load(f)
                 indexer.index_data(shard_sparse_vectors)
-                total_count += len(shard_sparse_vectors)
+                total_count += len(shard_sparse_vectors.doc_ids)
             os.remove(tmp_path)
         logger.info(f"GPU-{i} shards loaded.")
     logger.info(f"Total context vectors: {total_count}")

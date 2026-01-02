@@ -80,7 +80,7 @@ def gen_query_sparse_vectors(
             all_token_ids.append(row_token_ids.tolist())
             all_scores.append(row_weights.tolist())
 
-    return SparseVector(
+    return all_qids, SparseVector(
         doc_ids=all_doc_ids,
         token_ids=all_token_ids,
         scores=all_scores
@@ -96,7 +96,11 @@ def main(cfg: DictConfig):
     qrels = load_qrels(cfg.dataset.qrels_path, logger)
 
     # Load Lightning model & tokenizer
-    ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
+    # Load Lightning model & tokenizer
+    if getattr(cfg, "ckpt_file", None) is None:
+        ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
+    else:
+        ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
     backbone = SpladeEncoder(cfg.model)
     lightning_module = SpladeLightningModule.load_from_checkpoint(ckpt_path, model=backbone)
     query_encoder = lightning_module.model.query_model.to(cfg.device)
@@ -117,11 +121,11 @@ def main(cfg: DictConfig):
     # Evaluate & save results
     eval_results = evaluate_search_results(topk_results, qrels, logger=logger)
     os.makedirs(cfg.output_dir, exist_ok=True)
-    results_output_path = os.path.join(cfg.output_dir, "splade_topk_dev.json")
+    results_output_path = os.path.join(cfg.output_dir, f"{cfg.model.model_type}_splade_topk_dev.json")
     with open(results_output_path, "w", encoding="utf-8") as f:
         json.dump(topk_results, f, indent=4, ensure_ascii=False)
 
-    eval_output_path = os.path.join(cfg.output_dir, "metrics.json")
+    eval_output_path = os.path.join(cfg.output_dir, f"{cfg.model.model_type}_metrics.json")
 
     with open(eval_output_path, "w", encoding="utf-8") as f:
         json.dump(format_results_nested(eval_results), f, indent=4)
