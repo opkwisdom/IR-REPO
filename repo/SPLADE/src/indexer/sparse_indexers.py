@@ -33,8 +33,8 @@ class SparseIndexer:
         self.index_id_to_db_id.extend(sparse_vectors.doc_ids)
         for tokens, weights in zip(sparse_vectors.token_ids, sparse_vectors.scores):
             # Do pruning
+            paired = sorted(zip(weights, tokens), key=lambda x: x[0], reverse=True)
             if len(tokens) > top_k:
-                paired = sorted(zip(weights, tokens), key=lambda x: x[0], reverse=True)
                 paired = paired[:top_k]
             paired.sort(key=lambda x: x[1])
             weights, tokens = zip(*paired)

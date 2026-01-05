@@ -8,8 +8,10 @@ import json
 import numpy as np
 from datasets import load_dataset
 import sys
+import zipfile
 
-from resources import MSMARCO_MAP, HF_MAP, WIKI_DUMP, IR_MAP, BEIR_MAP
+
+from resources import MSMARCO_MAP, HF_MAP, WIKI_DUMP, IR_MAP, BEIR_MAP, BEIR_ZIP_MAP
 
 BASE_DATA_DIR = "/home/ir_repo/work/hdd/data/raw"
 
@@ -173,12 +175,108 @@ def download_ir_datasets(overwrite: bool = False) -> None:
                 continue
 
 
-def download_beir_datasets() -> None:
+# def download_beir_datasets() -> None:
+#     """
+#     Download BEIR benchmark datasets via ir-datasets (NQ, etc.).
+#     BEIR benchmark is the industry standard for evaluating zero-shot retrieval models.
+#     """
+#     raise NotImplementedError("BEIR dataset download not implemented yet.")
+def download_beir_datasets(overwrite: bool = False, remove_zip: bool = True) -> None:
     """
-    Download BEIR benchmark datasets via ir-datasets (NQ, etc.).
-    BEIR benchmark is the industry standard for evaluating zero-shot retrieval models.
+    Download BEIR benchmark datasets from the official BEIR ZIP distribution.
+    Each dataset is stored under: {BASE_DATA_DIR}/beir/<dataset>/
+      - corpus.jsonl
+      - queries.jsonl
+      - qrels/*.tsv
     """
-    raise NotImplementedError("BEIR dataset download not implemented yet.")
+    print("\n📦 Downloading BEIR datasets (official ZIP)...")
+
+    base_beir_dir = os.path.join(BASE_DATA_DIR, "beir")
+    os.makedirs(base_beir_dir, exist_ok=True)
+
+    for ds_key, url in BEIR_ZIP_MAP.items():
+        if url is None:
+            print(f"[SKIP] {ds_key}: URL is None (not publicly available / not configured).")
+            continue
+
+        ds_dir = os.path.join(base_beir_dir, ds_key)
+        os.makedirs(ds_dir, exist_ok=True)
+
+        # Heuristic "done" check: corpus.jsonl & queries.jsonl 존재하면 완료로 간주
+        corpus_path = os.path.join(ds_dir, "corpus.jsonl")
+        queries_path = os.path.join(ds_dir, "queries.jsonl")
+
+        if not overwrite and os.path.exists(corpus_path) and os.path.exists(queries_path):
+            print(f"[OK] {ds_key} already exists, skipping.")
+            continue
+
+        zip_name = f"{ds_key}.zip"
+        zip_path = os.path.join(ds_dir, zip_name)
+
+        # 1) Download ZIP
+        if overwrite and os.path.exists(zip_path):
+            os.remove(zip_path)
+
+        if not os.path.exists(zip_path):
+            print(f"⬇️  Downloading {ds_key} -> {zip_path}")
+            subprocess.run(["wget", "-O", zip_path, url], check=True)
+        else:
+            print(f"[CACHE] ZIP already downloaded: {zip_path}")
+
+        # 2) Extract ZIP
+        print(f"📦 Extracting {zip_name} -> {ds_dir}")
+        try:
+            with zipfile.ZipFile(zip_path, "r") as zf:
+                zf.extractall(ds_dir)
+        except zipfile.BadZipFile as e:
+            raise RuntimeError(f"Bad zip file for {ds_key}: {zip_path}") from e
+
+        # 3) Post-check: basic expected files
+        if not (os.path.exists(corpus_path) and os.path.exists(queries_path)):
+            # 일부 zip은 내부에 ds_key/ 폴더를 한 겹 더 둘 수도 있어서 fallback 체크
+            nested_dir = os.path.join(ds_dir, ds_key)
+            nested_corpus = os.path.join(nested_dir, "corpus.jsonl")
+            nested_queries = os.path.join(nested_dir, "queries.jsonl")
+            nested_qrels = os.path.join(nested_dir, "qrels")
+
+            if os.path.exists(nested_corpus) and os.path.exists(nested_queries):
+                # nested 구조면 파일들을 상위로 “정리”해준다 (파이프라인 단순화용)
+                print(f"🧹 Detected nested folder structure for {ds_key}. Flattening...")
+                # move corpus/queries
+                os.replace(nested_corpus, corpus_path)
+                os.replace(nested_queries, queries_path)
+                # move qrels folder
+                if os.path.exists(nested_qrels):
+                    target_qrels = os.path.join(ds_dir, "qrels")
+                    if os.path.exists(target_qrels):
+                        # 기존 qrels 있으면 overwrite 방식으로 정리
+                        # (여기서는 단순히 nested 쪽 파일을 덮어쓴다고 가정)
+                        pass
+                    os.makedirs(target_qrels, exist_ok=True)
+                    for fn in os.listdir(nested_qrels):
+                        os.replace(os.path.join(nested_qrels, fn), os.path.join(target_qrels, fn))
+                # remove nested dir if empty-ish
+                try:
+                    # nested_dir 안에 남은 게 없으면 삭제
+                    for root, dirs, files in os.walk(nested_dir, topdown=False):
+                        for name in files:
+                            os.remove(os.path.join(root, name))
+                        for name in dirs:
+                            os.rmdir(os.path.join(root, name))
+                    os.rmdir(nested_dir)
+                except Exception:
+                    pass
+            else:
+                raise RuntimeError(
+                    f"{ds_key} extracted, but corpus.jsonl/queries.jsonl not found in {ds_dir}. "
+                    f"Please inspect extracted contents."
+                )
+
+        # 4) Optionally remove ZIP
+        if remove_zip and os.path.exists(zip_path):
+            os.remove(zip_path)
+
+        print(f"✅ {ds_key} downloaded & extracted to {ds_dir}")
 
 
 

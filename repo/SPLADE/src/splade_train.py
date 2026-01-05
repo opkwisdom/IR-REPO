@@ -34,7 +34,7 @@ def main(cfg: DictConfig):
     checkpoint_cb = ModelCheckpoint(
         dirpath=cfg.ckpt_dir,
         monitor='val_mrr_10',
-        filename='dpr-{step:06d}-{val_mrr_10:.4f}',
+        filename='splade-{step:06d}-{val_mrr_10:.4f}',
         save_top_k=3,
         mode='max',
         save_last=True,

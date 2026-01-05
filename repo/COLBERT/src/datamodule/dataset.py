@@ -141,7 +141,7 @@ class ColBERTDataModule(pl.LightningDataModule):
     def query_tokenize(self, query_texts: List[str]):
         """
         Tokenize query texts for ColBERT.
-        All query inputs are used. (Not padded, just masked)
+        All query inputs are used. (Not padded, just masked, query augumentation)
         """
         q_ids = self.tokenizer(
             query_texts,

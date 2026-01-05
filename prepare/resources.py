@@ -48,5 +48,19 @@ IR_MAP = {
     }
 }
 
+
+# =========================
+BEIR_BASE = "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets"
+
+BEIR_ZIP_MAP = {
+    "trec-covid": f"{BEIR_BASE}/trec-covid.zip",
+    "nfcorpus": f"{BEIR_BASE}/nfcorpus.zip",
+    "scifact": f"{BEIR_BASE}/scifact.zip",
+}
+# Convenience list for loops
+BEIR_DATASETS = [k for k, v in BEIR_ZIP_MAP.items() if v is not None]
+
 ### =================================== TEMP ========================================= ###
 WIKI_DUMP = "https://dl.fbaipublicfiles.com/dpr/wikipedia_split/psgs_w100.tsv.gz"   # DPR, Retro
+
+

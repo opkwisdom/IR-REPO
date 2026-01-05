@@ -150,12 +150,12 @@ def main(cfg: DictConfig):
 
     world_size = torch.cuda.device_count()
     # Load collection
-    collection = load_collection(cfg.dataset.collection_path)
-    shards = get_shards(collection, world_size)
+    # collection = load_collection(cfg.dataset.collection_path)
+    # shards = get_shards(collection, world_size)
 
     # Multi-Process DDP indexing
     os.makedirs(cfg.output_dir, exist_ok=True)
-    mp.spawn(ddp_worker, args=(world_size, shards, cfg), nprocs=world_size)
+    # mp.spawn(ddp_worker, args=(world_size, shards, cfg), nprocs=world_size)
     # ddp_worker(0, world_size, shards, cfg)  # For debugging without multi-gpu
     
     # Gather all sparse vectors from shards & Build Sparse index
@@ -167,7 +167,7 @@ def main(cfg: DictConfig):
     for i in range(world_size):
         tmp_path_list = glob.glob(os.path.join(cfg.output_dir, f"shard_{i}_*.pkl"))
         tmp_path_list = sorted(tmp_path_list, key=lambda x: int(x.split('_')[-1].split('.')[0]))
-        for tmp_path in tmp_path_list:
+        for tmp_path in tqdm(tmp_path_list, desc=f"Loading GPU-{i} shards"):
             with open(tmp_path, 'rb') as f:
                 shard_sparse_vectors = pickle.load(f)
                 indexer.index_data(shard_sparse_vectors)

@@ -12,8 +12,8 @@ val_check_interval: 5000
 
 # Regularizer settings
 FLOPS:
-  lambda_q: 3e-4
-  lambda_p: 1e-4
+  lambda_q: 8e-4  # Naver Labs Europe settings
+  lambda_p: 6e-4  # Naver Labs Europe settings
   T: 50000
 
 warmup_steps: 6000

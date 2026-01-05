@@ -1,0 +1,12 @@
+flat:
+  index_type: flat
+  vector_dim: 768
+  buffer_size: 50000
+
+hnsw:
+  index_type: hnsw
+  vector_dim: 768
+  M: 32
+  ef_construction: 128
+  ef_search: 64
+  buffer_size: 50000

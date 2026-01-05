@@ -21,12 +21,9 @@ class Encoder(nn.Module):
 class ColBERTEncoder(BiEncoder):
     def __init__(self, cfg):
         super().__init__(cfg)
-        if cfg.share_encoder:
-            self.query_model = Encoder(cfg.model_name_or_path)
-            self.context_model = self.query_model
-        else:
-            self.query_model = Encoder(cfg.model_name_or_path)
-            self.context_model = Encoder(cfg.model_name_or_path)
+        # ColBERT use single encoder
+        self.query_model = Encoder(cfg.model_name_or_path)
+        self.context_model = self.query_model
 
     def query_emb(self, input_ids, attention_mask):
         return self.query_model(input_ids, attention_mask)
