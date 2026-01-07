@@ -126,10 +126,6 @@ class ColBERTDataModule(pl.LightningDataModule):
         self.seed = cfg.seed
         
         # Add special tokens ([Q], [D])
-        special_tokens = ["[Q]", "[D]"]
-        tokenizer.add_special_tokens({
-            "additional_special_tokens": special_tokens
-        })
         self.q_marker_id = tokenizer.convert_tokens_to_ids("[Q]")
         self.d_marker_id = tokenizer.convert_tokens_to_ids("[D]")
         self.tokenizer = tokenizer
@@ -147,17 +143,19 @@ class ColBERTDataModule(pl.LightningDataModule):
             query_texts,
             padding=False,
             truncation=True,
-            max_length=self.data_cfg.max_query_length,
+            max_length=self.data_cfg.max_query_length - 3,
             add_special_tokens=False,
             return_token_type_ids=False
         )["input_ids"]
         
         # Refer ColBERT github implementation
         prefix, postfix = [self.tokenizer.cls_token_id, self.q_marker_id], [self.tokenizer.sep_token_id]
-        padded_q_ids = [
-            prefix + q + [self.tokenizer.mask_token_id] * (self.data_cfg.max_query_length - (len(q) + 3)) + postfix
-            for q in q_ids
-        ]
+        padded_q_ids = []
+        for q in q_ids:
+            base_ids = prefix + q + postfix
+            pad_len = max(0, self.data_cfg.max_query_length - len(base_ids))
+            full_ids = base_ids + [self.tokenizer.mask_token_id] * pad_len
+            padded_q_ids.append(full_ids)
         input_ids = torch.tensor(padded_q_ids, dtype=torch.long)
         attention_mask = torch.ones_like(input_ids)
         
@@ -175,7 +173,7 @@ class ColBERTDataModule(pl.LightningDataModule):
             doc_texts,
             padding=False,
             truncation=True,
-            max_length=self.data_cfg.max_passage_length,
+            max_length=self.data_cfg.max_passage_length - 3,
             add_special_tokens=False,
             return_token_type_ids=False,
         )["input_ids"]
@@ -185,14 +183,12 @@ class ColBERTDataModule(pl.LightningDataModule):
         padded_d_ids = []
         attention_mask = []
         for d in d_ids:
-            contents = prefix + d + postfix
-            pad_len = self.data_cfg.max_passage_length - (len(d) + 3)
-
-            full_ids = contents + [self.tokenizer.pad_token_id] * pad_len
-            mask = [1] * len(contents) + [0] * pad_len
+            base_ids = prefix + d + postfix
+            pad_len = max(0, self.data_cfg.max_passage_length - len(base_ids))
+            full_ids = base_ids + [self.tokenizer.pad_token_id] * pad_len
+            mask = [1] * len(base_ids) + [0] * pad_len
             padded_d_ids.append(full_ids)
             attention_mask.append(mask)
-
         input_ids = torch.tensor(padded_d_ids, dtype=torch.long)
         attention_mask = torch.tensor(attention_mask, dtype=torch.long)
 
@@ -264,6 +260,13 @@ class ColBERTDataModule(pl.LightningDataModule):
                 )
                 logger.info("Using standard Map-style Dataset for training.")
 
+            self.val_dataset = ColBERTDevDataset(
+                dev_queries_path=self.data_cfg.dev_queries_path,
+                dev_qrels_path=self.data_cfg.dev_qrels_path,
+                dev_path=self.data_cfg.bm25_dev_path,
+                collection=self.collection,
+            )
+        elif stage == "validate":
             self.val_dataset = ColBERTDevDataset(
                 dev_queries_path=self.data_cfg.dev_queries_path,
                 dev_qrels_path=self.data_cfg.dev_qrels_path,

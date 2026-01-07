@@ -15,8 +15,10 @@ common:
   ### Dev path (used for naive evaluation)
   bm25_dev: /home/ir_repo/work/hdd/data/dev/msmarco/bm25_topk_dev.json
 
+  ### Original triple tsv path
+  tsv_triple_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/triples.train.small.tsv
+
 ### Specific sections
-# Debug path can be used for debug purposes
 mining:
   name: ${data.common.name}
   queries_path: ${data.common.queries_train}
@@ -25,39 +27,39 @@ mining:
 
 train:
   name: ${data.common.name}
-  
+
   # if we use msmarco tsv
   use_msmarco: True
   triple_path: ${data.common.tsv_triple_path}
 
   # if we don't use msmarco tsv
-  # triple_path: /home/ir_repo/work/repo/COLBERT/src/hard_negatives/msmarco.jsonl
+  # triple_path: /home/ir_repo/work/repo/SPLADE/src/hard_negatives/msmarco.jsonl
   queries_path: ${data.common.queries_train}
   collection_path: ${data.common.collection}
 
   ### Evaluation
   dev_queries_path: ${data.common.queries_dev}
   dev_qrels_path: ${data.common.qrels_dev}
-  bm25_dev_path: ${data.common.bm25_dev}
+  bm25_dev_path: ${data.common.bm25_dev_debug}
 
   ### Data-specific
-  max_query_length: 64
-  max_passage_length: 256
+  max_query_length: 32
+  max_passage_length: 220
 
   ### Others
-  num_workers: 8
+  num_workers: 0
 
 
 index:
   name: ${data.common.name}
-  collection_path: ${data.common.collection}
+  collection_path: ${data.common.collection_debug}
 
   ### Data-specific
-  max_passage_length: 256
+  max_passage_length: 220
 
 search:
   name: ${data.common.name}
-  queries_path: ${data.common.queries_dev}
+  queries_path: ${data.common.queries_dev_debug}
   qrels_path: ${data.common.qrels_dev}
 
-  max_query_length: 64
+  max_query_length: 32

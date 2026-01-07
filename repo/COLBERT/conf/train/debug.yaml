@@ -1,0 +1,9 @@
+batch_size: 32
+per_device_batch_size: 8
+gradient_accumulation_steps: 1
+
+learning_rate: 3e-6
+weight_decay: 0.01
+max_steps: 1000
+warmup_steps: 100   # 10%
+val_check_interval: 1000

@@ -2,6 +2,7 @@ from omegaconf import DictConfig, OmegaConf
 import logging
 import hydra
 import torch
+import os
 from transformers import AutoTokenizer
 
 import pytorch_lightning as pl
@@ -21,6 +22,11 @@ logger = logging.getLogger(__file__)
 def main(cfg: DictConfig):
     logger.info("Configuration:\n" + OmegaConf.to_yaml(cfg))
     set_seed(cfg.seed)
+
+    # Save training configuration
+    os.makedirs(cfg.ckpt_dir, exist_ok=True)
+    config_output_path = f"{cfg.ckpt_dir}/settings.yaml"
+    OmegaConf.save(config=cfg, f=config_output_path)
 
     # Prepare dataloader
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
