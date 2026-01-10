@@ -69,8 +69,10 @@ def main(cfg: DictConfig):
     qrels = load_qrels(cfg.dataset.qrels_path, logger)
 
     # Load Lightning model & tokenizer
-    ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
-    # ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
+    if getattr(cfg, "ckpt_file", None) is None:
+        ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
+    else:
+        ckpt_path = os.path.join(cfg.ckpt_dir, cfg.ckpt_file)
     backbone = DPREncoder(cfg.model)
     lightning_module = DPRLightningModule.load_from_checkpoint(ckpt_path, model=backbone)
     query_encoder = lightning_module.model.query_model.to(cfg.device)

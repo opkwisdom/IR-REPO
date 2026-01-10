@@ -41,7 +41,7 @@ pip install pytorch-lightning==2.5.6
 | Model | MRR@10 | nDCG@10 | Recall@10 | Recall@1000 |
 | :--- | :--- | :--- | :--- | :--- |
 | BM25 (Tuned) | 0.1874 | 0.2340 | 0.3916 | 0.8573 |
-| DPR (Bert) | 0.2677 | 0.3202 | 0.4975 | 0.9313 |
+| DPR (Bert) | 0.3048 | 0.3629 | 0.5590 | 0.9491 |
 | DPR (Roberta) | 0.3011 | 0.3595 | 0.5578 | 0.9520 |
 | SPLADE-max (Distilbert) | 0.3417 | 0.4048 | 0.6160 | 0.9641 |
 | ColBERT_v1 | - | - | - | - |

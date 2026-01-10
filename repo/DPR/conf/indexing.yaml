@@ -1,12 +1,12 @@
 defaults:
   - _self_
   - data: msmarco
-  - model: roberta
+  - model: bert
   - index: faiss
   - search: eval
 
 dataset: ${data.index}  # Use specific section
-index_key: flat
+index_key: flat_gpu
 
 seed: 42
 device: cuda

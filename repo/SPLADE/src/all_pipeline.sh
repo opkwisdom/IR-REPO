@@ -1,6 +1,6 @@
 #!/bin/bash
 CKPT_DIR=/home/ir_repo/work/hdd/checkpoint/splade/msmarco/distilbert_150k_flops
-CKPT_FILE=""
+# CKPT_FILE=""
 INDEX_DIR=/home/ir_repo/work/hdd/index/splade/msmarco/distilbert_150k_flops
 OUTPUT_DIR=/home/ir_repo/work/hdd/output/splade/msmarco
 

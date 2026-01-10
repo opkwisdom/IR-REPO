@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - data: msmarco       # default dataset
-  - model: roberta
+  - model: bert
   - train: step_based         # (base, step_based)
 
 dataset: ${data.train}  # Use specific section
@@ -10,7 +10,7 @@ seed: 42
 device: cuda
 num_device: 4
 
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/roberta_epoch_10
+ckpt_dir: /home/ir_repo/work/hdd/checkpoint/dpr/msmarco/bert_epoch_10
 exp_model: DPR
 exp_name: dpr_msmarco_train
 

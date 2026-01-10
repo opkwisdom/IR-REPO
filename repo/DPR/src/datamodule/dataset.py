@@ -231,6 +231,7 @@ class DPRDataModule(pl.LightningDataModule):
             pin_memory=True,
             collate_fn=self.train_collate_fn,
             drop_last=True,
+            persistent_workers=True,
         )
     
     def val_dataloader(self):
@@ -242,4 +243,5 @@ class DPRDataModule(pl.LightningDataModule):
             pin_memory=True,
             collate_fn=self.val_collate_fn,
             drop_last=False,
+            persistent_workers=True,
         )

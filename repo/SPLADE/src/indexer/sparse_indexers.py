@@ -49,8 +49,6 @@ class SparseIndexer:
             self.avg_n_terms += len(tokens)
     
     def search(self, query_vectors: SparseVector, query_indices: List[str], top_k: int, batch_size: int = 128) -> Dict[str, List[str]]:
-        # TODO: Implement search logic
-        
         flat_token_ids = [tid for seq in query_vectors.token_ids for tid in seq]
         flat_scores = [score for seq in query_vectors.scores for score in seq]
         

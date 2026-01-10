@@ -10,3 +10,11 @@ hnsw:
   ef_construction: 128
   ef_search: 64
   buffer_size: 50000
+
+### GPU-index
+flat_gpu:
+  index_type: flat
+  use_gpu: True
+  shard: True
+  vector_dim: 768
+  buffer_size: 50000

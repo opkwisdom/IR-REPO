@@ -15,6 +15,9 @@ common:
   ### Dev path (used for naive evaluation)
   bm25_dev: /home/ir_repo/work/hdd/data/dev/msmarco/bm25_topk_dev.json
 
+  ### Original triple tsv path
+  tsv_triple_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/triples.train.small.tsv
+
 ### Specific sections
 # Debug path can be used for debug purposes
 mining:

@@ -74,7 +74,15 @@ def main(cfg: DictConfig):
         gradient_clip_algorithm="norm"
         # strategy="auto"
     )
-    trainer.fit(splade_module, splade_datamodule)
+    
+    # Resume from checkpoint if specified
+    last_ckpt_path = os.path.join(cfg.ckpt_dir, "last.ckpt")
+    if os.path.exists(last_ckpt_path):
+        logger.info(f"Resuming training from checkpoint: {last_ckpt_path}")
+        trainer.fit(splade_module, splade_datamodule, ckpt_path=last_ckpt_path)
+    else:
+        logger.info("Starting training from scratch.")
+        trainer.fit(splade_module, splade_datamodule)
     # trainer.validate(splade_module, splade_datamodule)
 
 if __name__ == "__main__":

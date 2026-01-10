@@ -47,7 +47,7 @@ train:
   max_passage_length: 256
 
   ### Others
-  num_workers: 0
+  num_workers: 8
 
 
 index:

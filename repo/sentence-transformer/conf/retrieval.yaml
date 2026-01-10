@@ -6,7 +6,7 @@ defaults:
   - search: eval
 
 dataset: ${data.search}  # Use specific section
-index_key: flat
+index_key: flat_gpu
 
 seed: 42
 device: cuda

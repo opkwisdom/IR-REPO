@@ -96,7 +96,6 @@ def main(cfg: DictConfig):
     qrels = load_qrels(cfg.dataset.qrels_path, logger)
 
     # Load Lightning model & tokenizer
-    # Load Lightning model & tokenizer
     if getattr(cfg, "ckpt_file", None) is None:
         ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
     else:

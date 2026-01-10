@@ -14,12 +14,16 @@ logger = logging.getLogger()
 class FaissIndexer:
     def __init__(self, cfg: DictConfig):
         self.cfg = cfg
+        self.use_gpu = getattr(cfg, "use_gpu", False)
+        
         self.index_type = cfg.index_type
         self.vector_dim = cfg.vector_dim
         self.index_id_to_db_id = []
-        self.index = self._create_index(self.index_type, self.vector_dim)
+        self.index = self._create_cpu_index(self.index_type, self.vector_dim)
+        if self.use_gpu:
+            self.index = self._to_gpu(self.index, cfg)
 
-    def _create_index(self, index_type: str, dim: int):
+    def _create_cpu_index(self, index_type: str, dim: int):
         if index_type == "flat":
             return faiss.IndexFlatIP(dim)
         elif index_type == "hnsw":
@@ -29,6 +33,14 @@ class FaissIndexer:
             return index
         else:
             raise ValueError(f"Unsupported index type: {index_type}")
+        
+    def _to_gpu(self, cpu_index: faiss.Index, cfg: DictConfig):
+        """
+        Convert cpu-index to gpu-index, and configure gpu index options
+        """
+        co = faiss.GpuMultipleClonerOptions()
+        co.shard = getattr(cfg, "shard", False)
+        return faiss.index_cpu_to_all_gpus(cpu_index, co=co)
         
     def index_data(self, ids: List[str], vectors: np.ndarray, buffer_size: int = 50000):
         """
@@ -81,7 +93,12 @@ class FaissIndexer:
         meta_file = path + ".index_meta.pkl"
 
         logger.info(f"Saving index to {index_file}...")
-        faiss.write_index(self.index, index_file)
+        if self.use_gpu:
+            logger.info("Convert gpu-index to cpu-index...")
+            cpu_index = faiss.index_gpu_to_cpu(self.index)
+            faiss.write_index(cpu_index, index_file)
+        else:
+            faiss.write_index(self.index, index_file)
 
         with open(meta_file, "wb") as f:
             pickle.dump(self.index_id_to_db_id, f)
