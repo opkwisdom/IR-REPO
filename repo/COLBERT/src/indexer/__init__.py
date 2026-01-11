@@ -1,1 +1,2 @@
 from .colbert_indexer import ColBERTIndexer
+from .index_file_manager import IndexFileManager

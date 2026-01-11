@@ -1,12 +1,17 @@
-flat:
-  index_type: flat
-  vector_dim: 768
-  buffer_size: 50000
+ivfrq:
+  index_type: ivfrq
+  vector_dim: 128
+  use_gpu: True
+  stream_bsize: 1024
+  output_dir: 
 
-hnsw:
-  index_type: hnsw
-  vector_dim: 768
-  M: 32
-  ef_construction: 128
-  ef_search: 64
-  buffer_size: 50000
+  ### Kmeans
+  k: 16
+  niter: 4
+  
+  ### Quantization
+  nbits: 2
+  
+  ### Search
+  nprobe: 4
+  index_bsize: 64

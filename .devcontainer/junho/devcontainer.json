@@ -16,6 +16,7 @@
             "extensions": [
                 "mhutchie.git-graph",
                 "ms-python.python",
+                "ms-python.vscode-pylance",
                 "ms-python.debugpy",
                 "ms-python.vscode-python-envs",
                 "oderwat.indent-rainbow",
