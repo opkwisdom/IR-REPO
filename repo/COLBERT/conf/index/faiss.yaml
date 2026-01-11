@@ -4,6 +4,7 @@ ivfrq:
   use_gpu: True
   stream_bsize: 1024
   output_dir: 
+  index_bsize: 64
 
   ### Kmeans
   k: 16
@@ -11,7 +12,3 @@ ivfrq:
   
   ### Quantization
   nbits: 2
-  
-  ### Search
-  nprobe: 4
-  index_bsize: 64

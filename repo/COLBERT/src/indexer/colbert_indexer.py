@@ -120,6 +120,44 @@ class ColBERTIndexer:
                 self._flush_buffer()
         if len(self.buffer["codes"]) > 0:
             self._flush_buffer()
+            
+    def build_ivf(self):
+        """
+        Build IVF index from the indexed data
+        """
+        logger.info("Building IVF index")
+        codes_list, indices_list, pids_list = [], [], []
+        
+        for chunk_idx in range(self.chunk_idx):
+            data = np.load(f"{self.cfg.output_dir}/{chunk_idx}.npz")
+            codes_list.append(data["codes"])
+            indices_list.append(data["indices"])
+            pids_list.append(data["pids"])
+        
+        all_codes = np.concatenate(codes_list, axis=0)  # (Total_N, D_packed)
+        all_indices = np.concatenate(indices_list, axis=0)  # (Total_N,)
+        all_pids = np.concatenate(pids_list, axis=0)
+        logger.info(f"Total vectors: {len(all_indices)}")
+        
+        # sort by centroid order
+        sort_order = np.argsort(all_indices)
+        ivf_codes = all_codes[sort_order]
+        ivf_pids = all_pids[sort_order]
+        
+        unique_indices, counts = np.unique(all_indices[sort_order], return_counts=True)
+        ivf_lengths = np.zeros(self.num_partitions, dtype=np.int32)
+        ivf_lengths[unique_indices] = counts
+        ivf_indptr = np.concatenate([[0], np.cumsum(ivf_lengths)])  # Similar to CSR sparse matrix pointer
+        
+        save_path = os.path.join(self.cfg.output_dir, "ivf_index.npz")
+        np.savez_compressed(
+            save_path,
+            codes=ivf_codes,
+            pids=ivf_pids,
+            indptr=ivf_indptr
+        )
+        logger.info("IVF index build and saved.")
+        
     
     def _flush_buffer(self):
         codes_concat = np.concatenate(self.buffer["codes"], axis=0) # (N, D_packed)

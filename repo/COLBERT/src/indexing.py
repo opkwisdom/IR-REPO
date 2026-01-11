@@ -20,7 +20,7 @@ from utils import (
 )
 
 logger = logging.getLogger(__file__)
-CHUNK_N_EMBS_THRESHOLD = 100_000
+CHUNK_N_EMBS_THRESHOLD = 1_000_000
 
 ### ================ Reference ================ ###
 def doc_tokenize(tokenizer: AutoTokenizer, doc_texts: List[str], d_marker_id: int, max_passage_length: int):
@@ -68,7 +68,7 @@ def gen_ctx_vectors(
     encoder: Encoder,
     tokenizer: AutoTokenizer,
     cfg: DictConfig
-) -> Tuple[np.ndarray, List[str]]:
+) -> None:
     """
     Generate ctx vectors, each GPU process, then save chunks
     """
@@ -215,6 +215,9 @@ def main(cfg: DictConfig):
     logger.info("Indexing completed")
     
     file_manager.finalize()
+    
+    logger.info("Stage 3: IVF Building")
+    indexer.build_ivf()
     
 if __name__ == "__main__":
     main()
