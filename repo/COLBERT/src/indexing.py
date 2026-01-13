@@ -56,12 +56,6 @@ def doc_tokenize(tokenizer: AutoTokenizer, doc_texts: List[str], d_marker_id: in
     }
 ### ================ Reference ================ ###
 
-def _get_file_output_paths(cfg: DictConfig, rank: int, file_postfix: int) -> Tuple[str, str]:
-    ids_path = os.path.join(cfg.output_dir, f"shard_{rank}_{file_postfix}.pkl")
-    emb_path = os.path.join(cfg.output_dir, f"shard_{rank}_{file_postfix}.npy")
-    return ids_path, emb_path
-
-
 def gen_ctx_vectors(
     rank: int,
     shard_collection: Dict[str, Dict[str, str]],
@@ -100,7 +94,7 @@ def gen_ctx_vectors(
         with torch.no_grad():
             ctx_embs = encoder(**batch_inputs)    # (B, L_p, D)
             mask = batch_inputs["attention_mask"].bool()
-            valid_embs = ctx_embs[mask].cpu().numpy()     # (valid, D)
+            valid_embs = ctx_embs[mask].cpu()     # (valid, D)
         
         # Compute doclens to ensure one-to-many mapping
         batch_doclens = torch.sum(mask, dim=1).tolist()
@@ -112,15 +106,7 @@ def gen_ctx_vectors(
         
         # Save current chunk
         if cur_n_embs >= CHUNK_N_EMBS_THRESHOLD:
-            logger.info(f"Save Chunk {rank}-{file_postfix}")
-            ids_path, emb_path = _get_file_output_paths(cfg, rank, file_postfix)
-            # Save ids & doclens
-            pkl_data = {"pids": ctx_ids, "doclens": ctx_doclens}
-            with open(ids_path, 'wb') as f:
-                pickle.dump(pkl_data, f)
-            # Save embs
-            ctx_vectors = np.vstack(ctx_vectors)    # (N, L_p, D)
-            np.save(emb_path, ctx_vectors)
+            _save_chunk(rank, file_postfix, ctx_vectors, ctx_ids, ctx_doclens, cfg.output_dir)
             
             cur_n_embs = 0
             file_postfix += 1
@@ -130,16 +116,20 @@ def gen_ctx_vectors(
     
     # Save last chunk
     if ctx_ids:
-        logger.info(f"Save Chunk {rank}-{file_postfix}")
-        ids_path, emb_path = _get_file_output_paths(cfg, rank, file_postfix)
-        # Save ids & doclens
-        pkl_data = {"pids": ctx_ids, "doclens": ctx_doclens}
-        with open(ids_path, 'wb') as f:
-            pickle.dump(pkl_data, f)
-        # Save embs
-        ctx_vectors = np.vstack(ctx_vectors)    # (N, L_p, D)
-        np.save(emb_path, ctx_vectors)
+        _save_chunk(rank, file_postfix, ctx_vectors, ctx_ids, ctx_doclens, cfg.output_dir)
     logger.info("Finish generate ctx vectors.")
+
+def _save_chunk(rank, postfix, embs_list, pids, doclens, output_dir):
+    save_path = os.path.join(output_dir, f"shard_{rank}_{postfix}.pt")
+    combined_embs = torch.cat(embs_list, dim=0)
+
+    data = {
+        "embeddings": combined_embs,    # (Total_N, D)
+        "pids": pids,                   # List[str]
+        "doclens": doclens              # List[int]
+    }
+    torch.save(data, save_path)
+    logger.info(f"Save Chunk {rank}-{postfix}")
 
 
 def multi_gpu_worker(rank: int, world_size: int, collection_shards: List[Dict[str, Dict[str, str]]], cfg: DictConfig):
@@ -195,29 +185,29 @@ def main(cfg: DictConfig):
     # Multi-GPU indexing
     os.makedirs(cfg.output_dir, exist_ok=True)
     mp.spawn(multi_gpu_worker, args=(world_size, shards, cfg), nprocs=world_size, join=True)
-    # multi_gpu_worker(0, world_size, shards, cfg)  # For debugging without multi-gpu
     
     # Instantiate Index File Manager & ColBERTIndexer
     file_manager = IndexFileManager(cfg.output_dir)
     cfg_index = cfg.index[cfg.index_key]
     cfg_index.output_dir = cfg.output_dir
+    cfg_index.ndocs = len(collection)
     indexer = ColBERTIndexer(cfg_index)
     
     # Build FAISS index
     logger.info("Stage 1: Centroid selection by Kmeans")
-    codec_dir = f"{cfg.output_dir}/codec"
     sampled_vectors, num_partitions = file_manager.sample_vectors(cfg_index.k, cfg.seed)
-    indexer.train(sampled_vectors, num_partitions, codec_dir)
+    indexer.train(sampled_vectors, num_partitions)
     
     logger.info("Stage 2: Passage Encoding")
     iterator = file_manager.stream_batches(cfg_index.stream_bsize)
     indexer.index_data(iterator)
-    logger.info("Indexing completed")
+    logger.info(f"{cfg_index.ndocs} passages indexing completed")
     
     file_manager.finalize()
     
     logger.info("Stage 3: IVF Building")
     indexer.build_ivf()
+    indexer.save(cfg.output_dir)
     
 if __name__ == "__main__":
     main()

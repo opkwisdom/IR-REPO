@@ -61,7 +61,7 @@ def gen_query_vectors(
     encoder: Encoder,
     tokenizer: AutoTokenizer,
     cfg: DictConfig
-) -> Tuple[np.ndarray, List[str]]:
+) -> Tuple[torch.Tensor, List[str]]:
     """
     Generate query vectors
     """
@@ -84,13 +84,14 @@ def gen_query_vectors(
         batch_inputs = {k: v.to(encoder.model.device) for k, v in batch_inputs.items()}
 
         with torch.no_grad():
-            embeddings = encoder(**batch_inputs).cpu().numpy()  # (B, L_q, D)
+            embeddings = encoder(**batch_inputs).cpu()  # (B, L_q, D)
             query_vectors.append(embeddings)
             query_ids.extend(batch_ids)
 
-    query_vectors = np.vstack(query_vectors)    # (N, L_q, D)
+    query_vectors = torch.cat(query_vectors, dim=0)    # (N, L_q, D)
     return query_vectors, query_ids
-    
+
+
 @hydra.main(version_base=None, config_path="../conf", config_name="retrieval")
 def main(cfg: DictConfig):
     logger.info("Configuration:\n" + OmegaConf.to_yaml(cfg))
@@ -99,6 +100,7 @@ def main(cfg: DictConfig):
     # Load queries and qrels
     queries = load_queries(cfg.dataset.queries_path, logger)
     qrels = load_qrels(cfg.dataset.qrels_path, logger)
+    collection = load_collection(cfg.dataset.collection_path, logger)
 
     # Load Lightning model & tokenizer
     ckpt_path = get_best_checkpoint(cfg.ckpt_dir)
@@ -121,14 +123,15 @@ def main(cfg: DictConfig):
     
     # Load ColBERT index
     cfg_index = cfg.index[cfg.index_key]
-    codec_dir = f"{cfg.output_dir}/codec"
+    cfg_index.ndocs = len(collection)
     indexer = ColBERTIndexer(cfg_index)
-    indexer.load_codec(codec_dir)
+    indexer.load(cfg.index_dir)   # Indexer needs IVF index & ResidualCodec to perform search
     
     # Search
     top_k = cfg.search.topk
     batch_size = cfg.search.batch_size
-    topk_results = indexer.search(query_vectors, query_indices, top_k, batch_size)
+    nprobe = cfg.search.nprobe
+    topk_results = indexer.search(query_vectors, query_indices, top_k, batch_size, nprobe)
     
     # Evaluate & save results
     eval_results = evaluate_search_results(topk_results, qrels, logger=logger)

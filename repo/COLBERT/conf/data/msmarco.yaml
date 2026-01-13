@@ -62,5 +62,6 @@ search:
   name: ${data.common.name}
   queries_path: ${data.common.queries_dev}
   qrels_path: ${data.common.qrels_dev}
+  collection_path: ${data.common.collection}
 
   max_query_length: 64

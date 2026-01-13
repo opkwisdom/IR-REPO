@@ -1,6 +1,6 @@
 defaults:
   - _self_
-  - data: debug
+  - data: msmarco
   - model: bert
   - index: faiss
   - search: eval
@@ -14,7 +14,7 @@ device: cuda
 ckpt_dir: /home/ir_repo/work/hdd/checkpoint/colbert_v1/msmarco/bert_200k
 ckpt_file:
 
-output_dir: /home/ir_repo/work/hdd/index/colbert_v1/msmarco/debug
+output_dir: /home/ir_repo/work/hdd/index/COLBERT/results/colbert_v1/msmarco
 
 # hydra 설정
 hydra:

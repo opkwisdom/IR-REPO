@@ -1,5 +1,6 @@
 import os
 import re
+import torch
 import glob
 import pickle
 import logging
@@ -13,8 +14,8 @@ class IndexFileManager:
     Manages the loading and global offset mapping of large-scale vector index partitions
     """
     def __init__(self, index_dir: str):
-        self.npy_files = sorted(
-            glob.glob(f"{index_dir}/*.npy"),
+        self.pt_files = sorted(
+            glob.glob(f"{index_dir}/shard_*.pt"),
             key = lambda x: self._parse_rank_chunk(x)
         )
         self.index_dir = index_dir
@@ -23,8 +24,9 @@ class IndexFileManager:
         self.file_map = []
         cur_offset = 0
 
-        for fpath in self.npy_files:
-            count = np.load(fpath, mmap_mode='r').shape[0]
+        for fpath in self.pt_files:
+            checkpoint = torch.load(fpath, mmap=True, weights_only=True)
+            count = checkpoint["embeddings"].shape[0]
             self.file_map.append({
                 "path": fpath,
                 "count": count,
@@ -41,7 +43,7 @@ class IndexFileManager:
         something/shard_0_50.npy -> (0, 50)
         """
         fname = os.path.basename(filepath)
-        match = re.search(r'shard_(\d+)_(\d+).npy', fname)
+        match = re.search(r'shard_(\d+)_(\d+).pt', fname)
         if match:
             return int(match.group(1)), int(match.group(2))
     
@@ -81,23 +83,22 @@ class IndexFileManager:
             
             if batch_global_indices:
                 local_indices = [idx - start_idx for idx in batch_global_indices]
-                shard_data = np.load(meta['path'], mmap_mode='r')
+                shard_data = torch.load(meta['path'], mmap=True, weights_only=True)["embeddings"]
                 vectors = shard_data[local_indices]     # (B, D)
-                total_sampled_vectors.append(vectors)
+                total_sampled_vectors.append(vectors.cpu().numpy())
         
         return np.vstack(total_sampled_vectors), num_partitions
         
-    def stream_batches(self, batch_size: int) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+    def stream_batches(self, batch_size: int) -> Iterator[Tuple[torch.Tensor, np.ndarray]]:
         """
         Yields:
             (vectors, pids)
         """
         for meta in self.file_map:
-            chunk_vecs = np.load(meta['path'], mmap_mode='r')
-            with open(meta['path'].replace('.npy', '.pkl'), 'rb') as f:
-                chunk_metadata = pickle.load(f)
-            chunk_pids = chunk_metadata["pids"]
-            chunk_doclens = chunk_metadata["doclens"]
+            chunk_data = torch.load(meta['path'], mmap=True, weights_only=True)
+            chunk_vecs = chunk_data["embeddings"]    # (N, D)
+            chunk_pids = chunk_data["pids"]          # List[str]
+            chunk_doclens = chunk_data["doclens"]    # List[int]
             
             pids_arr = np.array(chunk_pids)
             expanded_pids = np.repeat(pids_arr, chunk_doclens)
@@ -108,7 +109,10 @@ class IndexFileManager:
             
             for start_idx in range(0, total_vectors, batch_size):
                 end_idx = min(total_vectors, start_idx + batch_size)
-                yield chunk_vecs[start_idx:end_idx], expanded_pids[start_idx:end_idx]
+
+                batch_vecs = chunk_vecs[start_idx:end_idx].cpu()
+                batch_pids = expanded_pids[start_idx:end_idx]
+                yield batch_vecs, batch_pids
     
     def finalize(self):
         """
