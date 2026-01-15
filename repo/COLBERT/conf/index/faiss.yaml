@@ -2,7 +2,7 @@ ivfrq:
   index_type: ivfrq
   vector_dim: 128
   use_gpu: True
-  stream_bsize: 1024
+  stream_bsize: 4096
   output_dir: 
   index_bsize: 64
   ndocs:

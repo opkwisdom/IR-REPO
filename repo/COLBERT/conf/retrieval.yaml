@@ -15,7 +15,7 @@ device: cuda
 ckpt_dir: /home/ir_repo/work/hdd/checkpoint/colbert_v1/msmarco/bert_200k
 ckpt_file:
 
-index_dir: /home/ir_repo/work/hdd/index/colbert_v1/msmarco/msmarco
+index_dir: /home/ir_repo/work/hdd/index/colbert_v1/msmarco
 output_dir: /home/ir_repo/work/repo/colbert_v1/results/msmarco
 
 

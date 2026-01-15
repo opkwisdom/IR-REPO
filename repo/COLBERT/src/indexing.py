@@ -7,6 +7,7 @@ from transformers import AutoTokenizer
 import torch
 import numpy as np
 import pickle
+import torch.distributed as dist
 import torch.multiprocessing as mp
 from tqdm import tqdm
 
@@ -193,14 +194,19 @@ def main(cfg: DictConfig):
     cfg_index.ndocs = len(collection)
     indexer = ColBERTIndexer(cfg_index)
     
-    # Build FAISS index
+    # Build FAISS index (Multi-GPU)
     logger.info("Stage 1: Centroid selection by Kmeans")
     sampled_vectors, num_partitions = file_manager.sample_vectors(cfg_index.k, cfg.seed)
     indexer.train(sampled_vectors, num_partitions)
     
     logger.info("Stage 2: Passage Encoding")
-    iterator = file_manager.stream_batches(cfg_index.stream_bsize)
-    indexer.index_data(iterator)
+    iterator = file_manager.stream_batches(
+        cfg_index.stream_bsize,
+        rank=0,
+        world_size=1
+    )
+    indexer.codec = indexer.codec.to(0)
+    indexer.index_data(iterator, rank=0)
     logger.info(f"{cfg_index.ndocs} passages indexing completed")
     
     file_manager.finalize()

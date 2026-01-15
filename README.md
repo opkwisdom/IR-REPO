@@ -44,6 +44,6 @@ pip install pytorch-lightning==2.5.6
 | DPR (Bert) | 0.3048 | 0.3629 | 0.5590 | 0.9491 |
 | DPR (Roberta) | 0.3011 | 0.3595 | 0.5578 | 0.9520 |
 | SPLADE-max (Distilbert) | 0.3417 | 0.4048 | 0.6160 | 0.9641 |
-| ColBERT_v1 | - | - | - | - |
+| ColBERT_v1 (re-rank) | 0.3479 | 0.4071 | 0.6056 | - |
 | ColBERT_v2 | - | - | - | - |
 | S-BERT (Bert) | 0.3809 | 0.4440 | 0.6577 | 0.9777 |

@@ -1,0 +1,67 @@
+common:
+  name: msmarco
+  collection: /home/ir_repo/work/hdd/data/preprocessed/msmarco_collection/collection.jsonl
+  queries_train: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/train_queries.jsonl
+  qrels_train: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/train_qrels.jsonl
+  queries_dev: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_queries.jsonl
+  qrels_dev: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/dev_qrels.jsonl
+
+  ### Debug path
+  collection_debug: /home/ir_repo/work/hdd/data/debug/collection_100k.jsonl
+  queries_train_debug: /home/ir_repo/work/hdd/data/debug/train_queries_10k.jsonl
+  queries_dev_debug: /home/ir_repo/work/hdd/data/debug/dev_queries_1k.jsonl
+  bm25_dev_debug: /home/ir_repo/work/hdd/data/debug/bm25_topk_dev_100.json
+
+  ### Dev path (used for naive evaluation)
+  bm25_dev: /home/ir_repo/work/hdd/data/dev/msmarco/bm25_topk_dev.json
+
+  ### Original triple tsv path
+  tsv_triple_path: /home/ir_repo/work/hdd/data/preprocessed/datasets/msmarco/triples.train.small.tsv
+
+### Specific sections
+# Debug path can be used for debug purposes
+mining:
+  name: ${data.common.name}
+  queries_path: ${data.common.queries_train}
+  qrels_path: ${data.common.qrels_train}
+  collection_path: ${data.common.collection}
+
+train:
+  name: ${data.common.name}
+  
+  # if we use msmarco tsv
+  use_msmarco: True
+  triple_path: ${data.common.tsv_triple_path}
+
+  # if we don't use msmarco tsv
+  # triple_path: /home/ir_repo/work/repo/COLBERT/src/hard_negatives/msmarco.jsonl
+  queries_path: ${data.common.queries_train}
+  collection_path: ${data.common.collection}
+
+  ### Evaluation
+  dev_queries_path: ${data.common.queries_dev}
+  dev_qrels_path: ${data.common.qrels_dev}
+  bm25_dev_path: ${data.common.bm25_dev}
+
+  ### Data-specific
+  max_query_length: 64
+  max_passage_length: 256
+
+  ### Others
+  num_workers: 8
+
+
+index:
+  name: ${data.common.name}
+  collection_path: ${data.common.collection}
+
+  ### Data-specific
+  max_passage_length: 256
+
+search:
+  name: ${data.common.name}
+  queries_path: ${data.common.queries_dev}
+  qrels_path: ${data.common.qrels_dev}
+  collection_path: ${data.common.collection}
+
+  max_query_length: 64

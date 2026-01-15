@@ -1,4 +1,5 @@
 import os
+import gc
 import pickle
 import torch
 import hydra
@@ -130,7 +131,7 @@ def ddp_worker(rank: int, world_size: int, collection_shards: List[Dict[str, Dic
     shard_keys = list(shard.keys())
     n = len(shard_keys)
 
-    CHUNK_SIZE = 100000
+    CHUNK_SIZE = 10000
     iterator = tqdm(range(0, n, CHUNK_SIZE), desc=f"Processing chunk on GPU-{rank}", position=rank*2)
     for i, start_idx in enumerate(iterator):
         end_idx = min(n, start_idx + CHUNK_SIZE)
@@ -150,12 +151,12 @@ def main(cfg: DictConfig):
 
     world_size = torch.cuda.device_count()
     # Load collection
-    # collection = load_collection(cfg.dataset.collection_path)
-    # shards = get_shards(collection, world_size)
+    collection = load_collection(cfg.dataset.collection_path)
+    shards = get_shards(collection, world_size)
 
     # Multi-Process DDP indexing
     os.makedirs(cfg.output_dir, exist_ok=True)
-    # mp.spawn(ddp_worker, args=(world_size, shards, cfg), nprocs=world_size)
+    mp.spawn(ddp_worker, args=(world_size, shards, cfg), nprocs=world_size)
     # ddp_worker(0, world_size, shards, cfg)  # For debugging without multi-gpu
     
     # Gather all sparse vectors from shards & Build Sparse index
@@ -172,6 +173,8 @@ def main(cfg: DictConfig):
                 shard_sparse_vectors = pickle.load(f)
                 indexer.index_data(shard_sparse_vectors)
                 total_count += len(shard_sparse_vectors.doc_ids)
+                del shard_sparse_vectors
+                gc.collect()
             os.remove(tmp_path)
         logger.info(f"GPU-{i} shards loaded.")
     logger.info(f"Total context vectors: {total_count}")

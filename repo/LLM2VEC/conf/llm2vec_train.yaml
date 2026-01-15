@@ -1,20 +1,19 @@
 defaults:
   - _self_
-  - data: msmarco
-  - model: bert
-  - index: faiss
-  - search: eval
+  - data: msmarco       # default dataset
+  - model: bert # which model?
+  - train: train
 
-dataset: ${data.index}  # Use specific section
-index_key: ivfrq        # ColBERT-specific index
+dataset: ${data.train}  # Use specific section
 
 seed: 42
 device: cuda
+num_device: 4
 
-ckpt_dir: /home/ir_repo/work/hdd/checkpoint/colbert_v1/msmarco/bert_200k
-ckpt_file:
+ckpt_dir: /home/ir_repo/work/hdd/checkpoint/llm2vec/msmarco/bert_200k
+exp_model: LLM2VEC
+exp_name: llm2vec_msmarco_train
 
-output_dir: /home/ir_repo/work/hdd/index/colbert_v1/debug
 
 # hydra 설정
 hydra:

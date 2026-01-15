@@ -89,12 +89,14 @@ class IndexFileManager:
         
         return np.vstack(total_sampled_vectors), num_partitions
         
-    def stream_batches(self, batch_size: int) -> Iterator[Tuple[torch.Tensor, np.ndarray]]:
+    def stream_batches(self, batch_size: int, rank: int, world_size: int) -> Iterator[Tuple[torch.Tensor, np.ndarray]]:
         """
         Yields:
             (vectors, pids)
         """
-        for meta in self.file_map:
+        my_files = self.file_map[rank::world_size]
+
+        for meta in my_files:
             chunk_data = torch.load(meta['path'], mmap=True, weights_only=True)
             chunk_vecs = chunk_data["embeddings"]    # (N, D)
             chunk_pids = chunk_data["pids"]          # List[str]

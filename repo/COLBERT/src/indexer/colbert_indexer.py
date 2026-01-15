@@ -6,7 +6,7 @@ import numpy as np
 import torch
 import logging
 from tqdm import tqdm
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Iterator
 from omegaconf import DictConfig
 
 from .residual_codec import ResidualCodec
@@ -38,7 +38,7 @@ class ColBERTIndexer:
         Train stage consists of 3 steps
         1. Kmeans clustering (Coarse)
         2. Residual computation (Fine-grained)
-        3. Save Codec object
+        3. Construct Codec object
         """
         logger.info(f"# of partitions: {num_partitions}")
         self.num_partitions = num_partitions
@@ -105,11 +105,12 @@ class ColBERTIndexer:
             avg_residual.cpu()
         )
     
-    def index_data(self, emb_iterator):
+    def index_data(self, emb_iterator: Iterator, rank: int):
         """
         Index data from the embeds iterator which is provided by IndexFileManager
         """
         for batch_vectors, batch_pids in emb_iterator:
+            batch_vectors = batch_vectors.to(rank)
             codes, indices = self.codec.compress(batch_vectors)
             self.buffer["codes"].append(codes)
             self.buffer["indices"].append(indices)
@@ -190,14 +191,18 @@ class ColBERTIndexer:
         iterator = tqdm(range(0, n, batch_size), desc="Searching queries")
 
         total_indices = []
+        avg_hits = []
         for start_idx in iterator:
             end_idx = min(n, start_idx+batch_size)
             batch_queries = query_vectors[start_idx:end_idx]    # (B, L_q, D)
             
             # TODO: Search logic
-            scores, indices = self.codec.search(self.ivf_index, batch_queries, top_k, nprobe, self.ndocs)
+            scores, indices, avg_hit_per_query_token = self.codec.search(self.ivf_index, batch_queries, top_k, nprobe, self.ndocs)
             total_indices.append(indices)
+            avg_hits.append(avg_hit_per_query_token)
         total_indices = np.vstack(total_indices)
+        avg_hit = sum(avg_hits) / len(avg_hits)
+        logger.info(f"Average hits per query token: {avg_hit:.2f}")
         
         # mapping faiss internal ids to db ids
         mapped_ids = {}
@@ -239,15 +244,13 @@ class ColBERTIndexer:
         
         # Load IVF index
         self.ivf_index = torch.load(f"{index_dir}/ivf_index.pt")
-        self.ivf_index["codes"] = self.ivf_index["codes"].to("cuda")
-        self.ivf_index["indptr"] = self.ivf_index["indptr"].to("cuda")
-        self.ivf_index["pids"] = self.ivf_index["pids"].to("cpu")
         logger.info(f"IVF index loaded from {index_dir}/ivf_index.pt.")
         
         # Load ResidualCodec
         codec_dir = f"{index_dir}/codec"
         self.codec = ResidualCodec.load(codec_dir)
         logger.info(f"Codec loaded from {codec_dir}.")
+
 
 # Reference: https://github.com/stanford-futuredata/ColBERT/blob/main/colbert/indexing/collection_indexer.py#L500
 def compute_faiss_kmeans(

@@ -38,7 +38,7 @@ class ResidualCodec:
         # bit packing
         packed_codes = self.pack_codes(raw_codes)
         centroid_indices = I.to(torch.int32)
-        return packed_codes, centroid_indices
+        return packed_codes.cpu(), centroid_indices.cpu()
     
     def compress_into_codes(self, residuals: torch.Tensor, bucket_cutoffs: torch.Tensor):
         """
@@ -60,7 +60,7 @@ class ResidualCodec:
         """
         packing_factor = 8 // self.nbits
         B, D = raw_codes.shape
-        packed = torch.zeros((B, D // packing_factor), dtype=torch.uint8)
+        packed = torch.zeros((B, D // packing_factor), dtype=torch.uint8, device=raw_codes.device)
         
         for i in range(packing_factor):
             cur_cols = raw_codes[:, i::packing_factor]
@@ -79,7 +79,7 @@ class ResidualCodec:
         B, D_comp = packed_codes.shape
         codes = torch.zeros(
             (B, D_comp * packing_factor),
-            dtype=torch.long,
+            dtype=torch.uint8,
             device=packed_codes.device
         )
         
@@ -92,7 +92,7 @@ class ResidualCodec:
         
         return codes
 
-    def search(self, ivf_index, query_vectors: torch.Tensor, topk: int, nprobe: int, ndocs: int) -> Tuple[np.ndarray, np.ndarray]:
+    def search(self, ivf_index, query_vectors: torch.Tensor, topk: int, nprobe: int, ndocs: int) -> Tuple[np.ndarray, np.ndarray, float]:
         """
         Search the Top-K candidates.
         Each query token perform searching respectively, then aggregated.
@@ -131,12 +131,13 @@ class ResidualCodec:
             if start == end:
                 continue
             
-            rng = torch.arange(start, end, device=ivf_codes.device) # n_cand per pid
+            rng = torch.arange(start, end, device=self.centroids.device) # n_cand per pid
             gather_indices_list.append(rng)
         
         gather_indices = torch.cat(gather_indices_list) # (Total_cand,)
         # Parallel gather
-        cand_codes = ivf_codes[gather_indices]  # (Total_cand, D_packed)
+        cand_codes_cpu = ivf_codes[gather_indices.cpu()]  # (Total_cand, D_packed)
+        cand_codes = cand_codes_cpu.to(self.centroids.device)
         cand_pids_cpu = ivf_pids[gather_indices.cpu()]
         cand_pids = cand_pids_cpu.to(cand_codes.device)
         
@@ -152,24 +153,72 @@ class ResidualCodec:
         expanded_table = code_lookup_table.unsqueeze(2)\
                             .expand(-1, -1, nprobes, -1, -1)\
                             .reshape(-1, D, Q)
-        aligned_table = torch.repeat_interleave(expanded_table, lengths_tensor, dim=0)
-        gather_indices = cand_indices.to(torch.long).unsqueeze(-1)  # (Total_cand, D, 1)
-        gathered_scores = torch.gather(aligned_table, dim=-1, index=gather_indices)
-        scores = torch.sum(gathered_scores, dim=1).squeeze(-1)  # (Total_cand,)
+        query_probe_ids = torch.repeat_interleave(
+            torch.arange(expanded_table.shape[0], device=cand_indices.device),
+            lengths_tensor
+        )
+        
+        # prevent OOM
+        BATCH_CHUNK_SIZE = 1_000_000
+        scores_list = []
+        d_range = torch.arange(D, device=cand_indices.device).unsqueeze(0)
+        
+        for i in range(0, total_cand, BATCH_CHUNK_SIZE):
+            end_i = min(total_cand, i+BATCH_CHUNK_SIZE)
+            
+            chunk_cand_indices = cand_indices[i:end_i]
+            chunk_qp_ids = query_probe_ids[i:end_i].unsqueeze(1)
+            idx_probes = chunk_qp_ids.expand(-1, D)
+            idx_dims = d_range.expand(chunk_cand_indices.shape[0], -1)
+            
+            chunk_scores_matrix = expanded_table[idx_probes, idx_dims, chunk_cand_indices.long()]
+            scores_list.append(chunk_scores_matrix.sum(dim=1))
+        scores = torch.cat(scores_list)  # (Total_cand,)
+        flat_centroid_scores = score_centroids.view(-1)
+        cand_centroid_scores = flat_centroid_scores[query_probe_ids]
+        
+        # RQ + centroids
+        scores = scores + cand_centroid_scores
         
         # Step 4. Aggregation by query ids
         batch_ids_per_probe = torch.arange(B, device=scores.device).repeat_interleave(L_q * nprobe)
         batch_ids = torch.repeat_interleave(batch_ids_per_probe, lengths_tensor)
+
+        token_indices = torch.arange(L_q, device=scores.device)
+        token_ids = token_indices.repeat_interleave(nprobe)\
+                                 .repeat(B)\
+                                 .repeat_interleave(lengths_tensor) # (Total_cand,)
         
+        # max-reduction over (batch_id, token_id, cand_pid)
+        # 64-bit composite key, batch < 2^12, token < 2^12, doc < 2^40
+        unique_keys = (batch_ids.to(torch.int64) << 52) | \
+                      (token_ids.to(torch.int64) << 40) | \
+                      (cand_pids.to(torch.int64))
+        unique_keys_sorted, inverse_indices = torch.unique(
+            unique_keys, sorted=True, return_inverse=True
+        )
+        num_unique_hits = unique_keys_sorted.shape[0]
+        avg_hit_per_query_token = (unique_keys.shape[0] / num_unique_hits)
+
+        max_scores = torch.full((num_unique_hits,), -1e9, device=scores.device)
+        max_scores.scatter_reduce_(
+            0, inverse_indices, scores, reduce="amax", include_self=False
+        )
+        
+        # Recover (batch, doc)
+        final_batch_ids = (unique_keys_sorted >> 52)
+        mask_40bit = (1 << 40) - 1
+        final_cand_pids = (unique_keys_sorted & mask_40bit)
+
         final_scores = torch.zeros((B, ndocs), dtype=torch.float32, device=scores.device)
         # Instead of max-reduced, simply summing over
         final_scores.index_put_(
-            (batch_ids, cand_pids),
-            scores,
+            (final_batch_ids, final_cand_pids),
+            max_scores,
             accumulate=True
         )
         topk_scores, topk_indices = torch.topk(final_scores, k=topk, dim=1)
-        return topk_scores.cpu().numpy(), topk_indices.cpu().numpy()
+        return topk_scores.cpu().numpy(), topk_indices.cpu().numpy(), avg_hit_per_query_token
 
     def _precompute_table(self, query_vectors: torch.Tensor):
         """
@@ -182,6 +231,12 @@ class ResidualCodec:
         code_lookup_table = query_vectors.unsqueeze(-1) * weights   # Element-wise
         return code_lookup_table
 
+    def to(self, rank: int):
+        self.centroids = self.centroids.to(rank)
+        self.avg_residual = self.avg_residual.to(rank)
+        self.bucket_cutoffs = self.bucket_cutoffs.to(rank)
+        self.bucket_weights = self.bucket_weights.to(rank)
+        return self
     
     def save(self, output_dir: str):
         logger.info(f"Save all codec objects to {output_dir}.")

@@ -1,0 +1,22 @@
+# Computationally expensive
+flat:
+  index_type: flat
+  vector_dim: 
+  buffer_size: 50000
+
+### GPU-index
+flat_gpu:
+  index_type: flat
+  use_gpu: True
+  shard: True
+  vector_dim: 
+  buffer_size: 50000
+
+ivfpq_gpu:
+  index_type: ivfpq
+  use_gpu: True
+  shard: True
+  vector_dim:
+  buffer_size: 50000
+
+  # IVF-PQ specific parameters
