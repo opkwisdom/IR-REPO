@@ -48,6 +48,7 @@ class ResidualCodec:
         Returns:
             codes: (N, D)
         """
+        normed_residuals = residuals / (self.avg_residual.unsqueeze(0) + 1e-10)
         codes = torch.sum(residuals.unsqueeze(-1) > bucket_cutoffs, dim=-1)
         return codes
     
@@ -92,6 +93,48 @@ class ResidualCodec:
         
         return codes
 
+    def _probe_centroids(self, query_vectors: torch.Tensor, nprobe: int) -> Tuple[torch.Tensor, torch.Tensor]:
+        score_centroids = einops.einsum(
+            query_vectors, self.centroids,
+            "B L_q D, C D -> B L_q C"
+        )
+        score_centroids, probe_centroids = torch.topk(score_centroids, k=nprobe, dim=-1)    # (B, L_q, nprobe)
+        return score_centroids, probe_centroids
+
+    def _gather_codes(self, probe_centroids: torch.Tensor, ivf_indptr: torch.Tensor, ivf_codes: torch.Tensor, ivf_pids: torch.Tensor):
+        """
+        Args:
+            probe_centroids: (B, L_q, nprobe)
+            ivf_indptr: (C + 1,)
+            ivf_codes: (N_total, D_packed)
+            ivf_pids: (N_total,)
+        Returns:
+            cand_packed_codes: (Total_cand, D_packed), candidate packed codes gathered from all probed centroids
+            cand_pids: (Total_cand,), corresponding pids of cand_codes
+            gather_indices_list: List[Tensor], list of gather indices per probed centroid
+        """
+        flat_probes = probe_centroids.view(-1).tolist()  # (N_probes,)
+        indptr_list = ivf_indptr.tolist()
+        gather_indices_list = []
+        
+        # Collect code indices under each probed centroid
+        for cid in flat_probes:
+            start = indptr_list[cid]
+            end = indptr_list[cid+1]
+            if start == end:
+                continue
+            
+            rng = torch.arange(start, end, device=self.centroids.device) # n_cand per pid
+            gather_indices_list.append(rng)
+        
+        gather_indices = torch.cat(gather_indices_list) # (Total_cand,)
+        # Parallel gather
+        cand_codes_cpu = ivf_codes[gather_indices.cpu()]  # (Total_cand, D_packed)
+        cand_packed_codes = cand_codes_cpu.to(self.centroids.device)
+        cand_pids_cpu = ivf_pids[gather_indices.cpu()]
+        cand_pids = cand_pids_cpu.to(cand_packed_codes.device)
+        return cand_packed_codes, cand_pids, gather_indices_list
+    
     def search(self, ivf_index, query_vectors: torch.Tensor, topk: int, nprobe: int, ndocs: int) -> Tuple[np.ndarray, np.ndarray, float]:
         """
         Search the Top-K candidates.
@@ -109,40 +152,16 @@ class ResidualCodec:
         ivf_pids, ivf_codes, ivf_indptr = ivf_index["pids"], ivf_index["codes"], ivf_index["indptr"]
         # Step 1. Probe centroids
         query_vectors = query_vectors.to(self.centroids.device)
-        score_centroids = einops.einsum(
-            query_vectors, self.centroids,
-            "B L_q D, C D -> B L_q C"
-        )
-        score_centroids, probe_centroids = torch.topk(score_centroids, k=nprobe, dim=-1)    # (B, L_q, nprobe)
+        score_centroids, probe_centroids = self._probe_centroids(query_vectors, nprobe)    # (B, L_q, nprobe)
         code_lookup_table = self._precompute_table(query_vectors)   # (B, L_q, D, Q)
         B, L_q, D, Q = code_lookup_table.shape
         
         # Step 2. Gather codes (parallel gather)
-        B, L_q, nprobes = probe_centroids.shape
-        flat_probes = probe_centroids.view(-1)  # (N_probes,)
-        
-        probe_list = flat_probes.tolist()
-        indptr_list = ivf_indptr.tolist()
-        gather_indices_list = []
-        
-        for pid in probe_list:
-            start = indptr_list[pid]
-            end = indptr_list[pid+1]
-            if start == end:
-                continue
-            
-            rng = torch.arange(start, end, device=self.centroids.device) # n_cand per pid
-            gather_indices_list.append(rng)
-        
-        gather_indices = torch.cat(gather_indices_list) # (Total_cand,)
-        # Parallel gather
-        cand_codes_cpu = ivf_codes[gather_indices.cpu()]  # (Total_cand, D_packed)
-        cand_codes = cand_codes_cpu.to(self.centroids.device)
-        cand_pids_cpu = ivf_pids[gather_indices.cpu()]
-        cand_pids = cand_pids_cpu.to(cand_codes.device)
-        
-        cand_indices = self.unpack_codes(cand_codes)   # (Total_cand, D), 0, 2, 3, 1, ...
-        total_cand, D = cand_indices.shape
+        cand_packed_codes, cand_pids, gather_indices_list = self._gather_codes(
+            probe_centroids, ivf_indptr, ivf_codes, ivf_pids
+        )
+        cand_codes = self.unpack_codes(cand_packed_codes)   # (Total_cand, D), 0, 2, 3, 1, ...
+        total_cand, D = cand_codes.shape
         
         # pid mapping
         lengths = [len(x) for x in gather_indices_list]
@@ -151,22 +170,22 @@ class ResidualCodec:
         # Step 3. Lookup scoring
         # (B, L_q, D, Q) -> (B, L_q, nprobe, D, Q) -> (N_probes, D, Q)
         expanded_table = code_lookup_table.unsqueeze(2)\
-                            .expand(-1, -1, nprobes, -1, -1)\
+                            .expand(-1, -1, nprobe, -1, -1)\
                             .reshape(-1, D, Q)
         query_probe_ids = torch.repeat_interleave(
-            torch.arange(expanded_table.shape[0], device=cand_indices.device),
+            torch.arange(expanded_table.shape[0], device=cand_codes.device),
             lengths_tensor
         )
         
         # prevent OOM
         BATCH_CHUNK_SIZE = 1_000_000
         scores_list = []
-        d_range = torch.arange(D, device=cand_indices.device).unsqueeze(0)
+        d_range = torch.arange(D, device=cand_codes.device).unsqueeze(0)
         
         for i in range(0, total_cand, BATCH_CHUNK_SIZE):
             end_i = min(total_cand, i+BATCH_CHUNK_SIZE)
             
-            chunk_cand_indices = cand_indices[i:end_i]
+            chunk_cand_indices = cand_codes[i:end_i]
             chunk_qp_ids = query_probe_ids[i:end_i].unsqueeze(1)
             idx_probes = chunk_qp_ids.expand(-1, D)
             idx_dims = d_range.expand(chunk_cand_indices.shape[0], -1)

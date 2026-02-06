@@ -2,4 +2,4 @@ name: eval_search
 topk: 1000
 batch_size: 8
 chunk_size: 100
-nprobe: 4
+nprobe: 32

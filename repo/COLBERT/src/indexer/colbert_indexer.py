@@ -111,6 +111,7 @@ class ColBERTIndexer:
         """
         for batch_vectors, batch_pids in emb_iterator:
             batch_vectors = batch_vectors.to(rank)
+            batch_vectors = torch.nn.functional.normalize(batch_vectors, p=2, dim=1)
             codes, indices = self.codec.compress(batch_vectors)
             self.buffer["codes"].append(codes)
             self.buffer["indices"].append(indices)

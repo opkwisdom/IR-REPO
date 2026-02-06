@@ -93,7 +93,12 @@ class FaissIndexer:
         meta_file = path + ".index_meta.pkl"
 
         logger.info(f"Saving index to {index_file}...")
-        faiss.write_index(self.index, index_file)
+        # Save Faiss index, if using GPU index, convert to CPU first
+        if faiss.get_num_gpus() > 0 and self.use_gpu:
+            cpu_index = faiss.index_gpu_to_cpu(self.index)
+            faiss.write_index(cpu_index, index_file)
+        else:
+            faiss.write_index(self.index, index_file)
 
         with open(meta_file, "wb") as f:
             pickle.dump(self.index_id_to_db_id, f)
