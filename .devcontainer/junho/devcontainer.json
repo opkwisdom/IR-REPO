@@ -1,6 +1,6 @@
 {
     "name": "IR-REPO junho",
-    "image": "ir_repo",
+    "image": "juno2357/ir_repo:latest",
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/ir_repo/work,type=bind",
     "workspaceFolder": "/home/ir_repo/work",
     "mounts": [
