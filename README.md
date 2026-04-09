@@ -2,6 +2,11 @@
 A unified framework for training and evaluating Neural IR models. This repository supports end-to-end pipelines from preprocessing to training and evluation on major benchmarks.
 
 # Environmental Setup
+## :octocat: Git
+```{.bash}
+git clone https://github.com/opkwisdom/IR-REPO.git
+```
+
 ## 🐋 Docker
 First, pull the Docker image and set permissions:
 ```{.bash}
